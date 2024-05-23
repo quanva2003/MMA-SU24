@@ -1,8 +1,20 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { View, TextInput, StyleSheet, Text } from "react-native";
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { Icon } from "react-native-elements";
 
 const Navbar = () => {
+  const navigation = useNavigation();
+
+  const goToShoppingCart = () => {
+    navigation.navigate("CartScreen");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -20,9 +32,12 @@ const Navbar = () => {
             placeholderTextColor="#FFFFFF"
           />
         </View>
-        <View style={styles.cartContainer}>
+        <TouchableOpacity
+          style={styles.cartContainer}
+          onPress={() => navigation.navigate("CartScreen")}
+        >
           <Icon type="MaterialIcons" name="shopping-cart" color="#ffffff" />
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

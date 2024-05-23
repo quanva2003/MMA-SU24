@@ -1,16 +1,18 @@
 import React from "react";
 import { View, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import Navbar from "../components/Home/Navbar";
-import BasicCarouselExample from "../components/Home/Carousel";
+import CarouselComponent from "../components/Home/Carousel";
 import Category from "../components/Home/Category";
+import NewProduct from "../components/Home/NewProduct";
 
 const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Navbar />
       <ScrollView>
-        <BasicCarouselExample />
+        <CarouselComponent />
         <Category />
+        <NewProduct />
       </ScrollView>
     </SafeAreaView>
   );

@@ -53,7 +53,7 @@ const ProductCard = ({ product }) => (
   </View>
 );
 
-const Category = () => {
+const NewProduct = () => {
   const [selectedCategory, setSelectedCategory] = React.useState("Tüm Ürünler");
 
   const filteredProducts =
@@ -63,28 +63,7 @@ const Category = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.topHeader}>Top diamond</Text>
-      <View style={styles.categoryContainer}>
-        {categories.map((category, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.categoryButton,
-              selectedCategory === category && styles.selectedCategoryButton,
-            ]}
-            onPress={() => setSelectedCategory(category)}
-          >
-            <Text
-              style={[
-                styles.categoryText,
-                selectedCategory === category && styles.selectedCategoryText,
-              ]}
-            >
-              {category}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <Text style={styles.topHeader}>New Product</Text>
       <FlatList
         data={filteredProducts}
         renderItem={({ item }) => <ProductCard product={item} />}
@@ -158,4 +137,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Category;
+export default NewProduct;

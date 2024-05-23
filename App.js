@@ -10,10 +10,18 @@ import AccountScreen from "./src/screens/AccountScreen";
 import ProductScreen from "./src/screens/ProductScreen";
 import PricesScreen from "./src/screens/PricesScreen";
 import NewsScreen from "./src/screens/NewsScreen";
+import CartScreen from "./src/screens/CartScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
+const HomeStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="CartScreen" component={CartScreen} />
+    </Stack.Navigator>
+  );
+};
 function App() {
   return (
     <NavigationContainer>
@@ -48,7 +56,7 @@ function App() {
           />
           <Tab.Screen
             name="Home"
-            component={HomeScreen}
+            component={HomeStack}
             options={{
               tabBarIcon: ({ color }) => (
                 <Icon type="MaterialIcons" name="home" color={color} />
