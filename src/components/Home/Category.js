@@ -63,7 +63,7 @@ const Category = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.topHeader}>Top diamond</Text>
+      <Text className="text-red-500">Top diamond</Text>
       <View style={styles.categoryContainer}>
         {categories.map((category, index) => (
           <TouchableOpacity
