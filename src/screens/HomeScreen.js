@@ -4,6 +4,8 @@ import Navbar from "../components/Home/Navbar";
 import CarouselComponent from "../components/Home/Carousel";
 import Category from "../components/Home/Category";
 import NewProduct from "../components/Home/NewProduct";
+import Jewelry from "../components/Home/Jewelry";
+import NewCollection from "../components/Home/NewCollection";
 
 const HomeScreen = () => {
   return (
@@ -11,8 +13,10 @@ const HomeScreen = () => {
       <Navbar />
       <ScrollView>
         <CarouselComponent />
+        <Jewelry />
         <Category />
         <NewProduct />
+        <NewCollection />
       </ScrollView>
     </SafeAreaView>
   );

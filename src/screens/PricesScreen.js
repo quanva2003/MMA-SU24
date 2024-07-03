@@ -2,179 +2,205 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Image,
   StyleSheet,
-  TextInput,
+  Button,
   FlatList,
-  TouchableOpacity,
+  CheckBox,
+  Image,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Checkbox, Slider } from "@ant-design/react-native";
 
-// Sample data
-const items = [
-  {
-    id: "1",
-    name: "2,99 Karat Pırlanta Yüzük",
-    size: "3.5",
-    price: "10.750 ₺",
-    image: require("../../assets/R.jpg"), // Replace with actual image path
-  },
-  {
-    id: "2",
-    name: "1,75 Karat Pırlanta Yüzük",
-    size: "3.5",
-    price: "9.875 ₺",
-    image: require("../../assets/R.jpg"), // Replace with actual image path
-  },
-  {
-    id: "3",
-    name: "2,99 Karat Pırlanta Yüzük",
-    size: "3.5",
-    price: "10.750 ₺",
-    image: require("../../assets/R.jpg"), // Replace with actual image path
-  },
-  {
-    id: "4",
-    name: "1,75 Karat Pırlanta Yüzük",
-    size: "3.5",
-    price: "9.875 ₺",
-    image: require("../../assets/R.jpg"), // Replace with actual image path
-  },
-  {
-    id: "5",
-    name: "2,99 Karat Pırlanta Yüzük",
-    size: "3.5",
-    price: "10.750 ₺",
-    image: require("../../assets/R.jpg"), // Replace with actual image path
-  },
-  {
-    id: "6",
-    name: "1,75 Karat Pırlanta Yüzük",
-    size: "3.5",
-    price: "9.875 ₺",
-    image: require("../../assets/R.jpg"), // Replace with actual image path
-  },
+const diamonds = [
+  { size: 3.9, color: "D", clarity: "VVS1" },
+  { size: 4.5, color: "D", clarity: "VVS1" },
+  { size: 4.6, color: "D", clarity: "VVS1" },
+  { size: 4.1, color: "D", clarity: "VVS1" },
+  { size: 4.5, color: "E", clarity: "VVS1" },
+  { size: 3.8, color: "E", clarity: "VVS1" },
+  { size: 3.9, color: "E", clarity: "VVS1" },
+  { size: 3.6, color: "F", clarity: "VVS1" },
+  { size: 4.2, color: "F", clarity: "VVS1" },
+  { size: 3.7, color: "F", clarity: "VVS1" },
+  { size: 4.0, color: "G", clarity: "VVS1" },
+  { size: 4.3, color: "G", clarity: "VVS1" },
 ];
 
-// PriceCard Component
-const PriceCard = ({ item }) => {
-  return (
-    <View style={styles.card}>
-      <Image source={item.image} style={styles.image} />
-      <View style={styles.details}>
-        <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.size}>Boyut: {item.size}</Text>
-        <Text style={styles.delivery}>Yarın Kapında</Text>
-        <Text style={styles.price}>{item.price}</Text>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Mua di</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
+const PriceComponent = () => {
+  const [color, setColor] = useState("");
+  const [clarity, setClarity] = useState("");
+  const [size, setSize] = useState([3.6, 10.2]);
+  const [filteredDiamonds, setFilteredDiamonds] = useState([]);
 
-const SearchBox = ({ onSearch }) => {
-  return (
-    <View style={styles.searchContainer}>
-      <Icon name="search" size={20} color="#aaa" />
-      <TextInput
-        style={styles.input}
-        placeholder="Search..."
-        placeholderTextColor="#aaa"
-        onChangeText={onSearch}
-      />
-    </View>
-  );
-};
-
-const PriceScreen = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const filteredItems = items.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const colorLabels = ["D", "E", "F", "G"];
+  const clarityLabels = ["IF/FL", "VVS2", "VS1", "VVS1", "VS2", "SI1", "SI2"];
+  const filterDiamonds = () => {
+    console.log("color:", color);
+    console.log("clarity:", clarity);
+    console.log("size range:", size);
+    const results = diamonds.filter(
+      (diamond) =>
+        diamond.size >= size[0] &&
+        diamond.size <= size[1] &&
+        diamond.color === color &&
+        diamond.clarity === clarity
+    );
+    console.log(results);
+    setFilteredDiamonds(results);
+  };
 
   return (
     <View style={styles.container}>
-      <SearchBox onSearch={setSearchTerm} />
-      <FlatList
-        data={filteredItems}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <PriceCard item={item} />}
+      <Text style={styles.title}>PRICES OF DIAMOND</Text>
+
+      <Text style={styles.label}>Màu sắc:</Text>
+      <Slider
+        style={styles.slider}
+        minimumValue={0}
+        maximumValue={colorLabels.length - 1}
+        step={1 / 3}
+        value={color}
+        onChange={(value) => {
+          setColor(colorLabels[Math.round(value * 3)]);
+        }}
       />
+      <View style={styles.sliderLabels}>
+        {colorLabels.map((label, index) => (
+          <Text key={index} style={styles.sliderLabel}>
+            {label}
+          </Text>
+        ))}
+      </View>
+
+      <Text style={styles.label}>Độ tinh khiết:</Text>
+      <Slider
+        style={styles.slider}
+        minimumValue={0}
+        maximumValue={clarityLabels.length - 1}
+        step={1 / 6}
+        value={clarity}
+        onChange={(value) => {
+          setClarity(clarityLabels[Math.round(value * 6)]);
+        }}
+      />
+      <View style={styles.sliderLabels}>
+        {clarityLabels.map((label, index) => (
+          <Text key={index} style={styles.sliderLabel}>
+            {label}
+          </Text>
+        ))}
+      </View>
+
+      <Text style={styles.label}>Kích thước (mm/ly):</Text>
+      <Slider
+        style={styles.slider}
+        minimumValue={3.6}
+        maximumValue={10.2}
+        step={0.1}
+        value={size[1]}
+        onChange={(val) => {
+          value = Math.round((3.6 + val * 6.6) * 10) / 10;
+          setSize([size[0], value]);
+        }}
+      />
+      <View style={styles.sizeLabels}>
+        <Text style={{ color: "#fff" }}>{size[0].toFixed(1)}</Text>
+        <Text style={{ color: "#fff" }}>{size[1].toFixed(1)}</Text>
+      </View>
+
+      <Button title="Show Results" onPress={filterDiamonds} />
+
+      {filteredDiamonds.length > 0 && (
+        <View style={styles.resultsContainer}>
+          <Text style={styles.resultsTitle}>Results:</Text>
+          <FlatList
+            data={filteredDiamonds}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.resultRow}>
+                <Image
+                  source={{
+                    uri: "https://i.natgeofe.com/k/905d83a3-45ed-46d1-8717-833d30b8c964/diamond-polished_4x3.jpg",
+                  }}
+                  style={styles.icon}
+                />
+                <Text style={styles.resultText}>{item.size}</Text>
+                <Text style={styles.resultText}>{item.color}</Text>
+                <Text style={styles.resultText}>{item.clarity}</Text>
+                <Checkbox />
+              </View>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    padding: 20,
     backgroundColor: "#000",
-    padding: 16,
     marginTop: 30,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#333",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 20,
-  },
-  input: {
     flex: 1,
-    marginLeft: 10,
-    color: "#fff",
-  },
-  card: {
-    flexDirection: "row",
-    backgroundColor: "#333",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  image: {
-    width: 80,
-    height: 80,
-    marginRight: 10,
-  },
-  details: {
-    flex: 1,
-    justifyContent: "center",
   },
   title: {
-    color: "#fff",
-    fontSize: 16,
+    textAlign: "center",
+    fontSize: 22,
     fontWeight: "bold",
-  },
-  size: {
-    color: "#aaa",
-    fontSize: 14,
-  },
-  delivery: {
-    color: "#aaa",
-    fontSize: 14,
-  },
-  price: {
+    marginBottom: 20,
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 5,
   },
-  button: {
-    backgroundColor: "#555",
-    borderRadius: 8,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+  label: {
+    fontSize: 16,
+    marginTop: 20,
+    color: "#fff",
+  },
+  slider: {
+    width: "100%",
+    height: 40,
+    color: "#fff",
+  },
+  sliderLabels: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    color: "#fff",
+  },
+  sliderLabel: {
+    fontSize: 12,
+    color: "#fff",
+  },
+  sizeLabels: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 10,
-    alignItems: "center",
-  },
-  buttonText: {
     color: "#fff",
+  },
+  resultsContainer: {
+    marginTop: 20,
+    color: "#fff",
+  },
+  resultsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  resultRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ccc",
+    padding: 10,
+    marginTop: 5,
+    borderRadius: 5,
+  },
+  resultText: {
+    flex: 1,
     fontSize: 14,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
   },
 });
 
-export default PriceScreen;
+export default PriceComponent;

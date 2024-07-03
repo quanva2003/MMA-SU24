@@ -7,6 +7,8 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
+import { Icon } from "react-native-elements";
+import tw from "twrnc";
 
 const categories = ["Tüm Ürünler", "Yüzük", "Kolye"];
 const products = [
@@ -17,6 +19,7 @@ const products = [
       "https://th.bing.com/th/id/OIP.VL7Yvcbyjm4RP2D9IQiNXQHaFj?rs=1&pid=ImgDetMain",
     description: "1,75 qqasfergrefadf",
     price: "9.875 $",
+    quantitySold: "10",
   },
   {
     id: "2",
@@ -25,6 +28,7 @@ const products = [
       "https://th.bing.com/th/id/OIP.VL7Yvcbyjm4RP2D9IQiNXQHaFj?rs=1&pid=ImgDetMain",
     description: "2,99 ergsefdgrqef",
     price: "10.750 $",
+    quantitySold: "10",
   },
   {
     id: "3",
@@ -33,6 +37,7 @@ const products = [
       "https://th.bing.com/th/id/OIP.VL7Yvcbyjm4RP2D9IQiNXQHaFj?rs=1&pid=ImgDetMain",
     description: "1,75 qqasfergrefadf",
     price: "9.875 $",
+    quantitySold: "10",
   },
   {
     id: "4",
@@ -41,6 +46,7 @@ const products = [
       "https://th.bing.com/th/id/OIP.VL7Yvcbyjm4RP2D9IQiNXQHaFj?rs=1&pid=ImgDetMain",
     description: "2,99 ergsefdgrqef",
     price: "10.750 $",
+    quantitySold: "10",
   },
   // Add more products as needed
 ];
@@ -50,6 +56,7 @@ const ProductCard = ({ product }) => (
     <Image source={{ uri: product.image }} style={styles.productImage} />
     <Text style={styles.productDescription}>{product.description}</Text>
     <Text style={styles.productPrice}>{product.price}</Text>
+    <Text style={tw`text-white `}>{product.quantitySold} sold</Text>
   </View>
 );
 
@@ -63,8 +70,24 @@ const Category = () => {
 
   return (
     <View style={styles.container}>
-      <Text className="text-red-500">Top diamond</Text>
-      <View style={styles.categoryContainer}>
+      <View style={tw`flex-row justify-between items-center`}>
+        <Text style={tw`text-white text-xl font-bold ml-2 mb-2`}>
+          Top Category
+        </Text>
+        <TouchableOpacity style={tw`flex-row items-center`}>
+          <Text style={tw`text-white text-base font-light ml-2 mb-2`}>
+            See more
+          </Text>
+          <Icon
+            name="chevron-right"
+            type="MaterialIcons"
+            size={20}
+            color="white"
+            style={tw`ml-1 mb-1`}
+          />
+        </TouchableOpacity>
+      </View>
+      {/* <View style={styles.categoryContainer}>
         {categories.map((category, index) => (
           <TouchableOpacity
             key={index}
@@ -84,9 +107,9 @@ const Category = () => {
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </View> */}
       <FlatList
-        data={filteredProducts}
+        data={products}
         renderItem={({ item }) => <ProductCard product={item} />}
         keyExtractor={(item) => item.id}
         horizontal={true} // Enable horizontal scrolling

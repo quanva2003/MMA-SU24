@@ -11,8 +11,8 @@ import ProductScreen from "./src/screens/ProductScreen";
 import PricesScreen from "./src/screens/PricesScreen";
 import NewsScreen from "./src/screens/NewsScreen";
 import CartScreen from "./src/screens/CartScreen";
-import LoginScreen from "./src/screens/LoginScreen"; 
-import SignUpScreen from "./src/screens/SignUpScreen";  // Import LoginScreen
+import LoginScreen from "./src/screens/LoginScreen";
+import SignUpScreen from "./src/screens/SignUpScreen"; // Import LoginScreen
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

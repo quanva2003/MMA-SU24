@@ -16,7 +16,7 @@ const products = [
     id: "1",
     category: "Sanpham1",
     image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/99/gd0000w000583-day-chuyen-vang-trang-y-18k-pnj.png",
+      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/213/sp-gbztzth000006-bong-tai-vang-10k-dinh-da-synthetic-disney-pnj-inside-out-2-01.png",
     description: "1,75 qqasfergrefadf",
     price: "9.875 $",
     quantitySold: "10",
@@ -25,7 +25,7 @@ const products = [
     id: "2",
     category: "Sanpham2",
     image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/208/sp-gbddddw000678-bong-tai-kim-cuong-vang-trang-14k-pnj-first-diamond-1.png",
+      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/210/sp-gbztmxy000318-bong-tai-vang-10k-dinh-da-synthetic-disney-pnj-1.png",
     description: "2,99 ergsefdgrqef",
     price: "10.750 $",
     quantitySold: "10",
@@ -34,7 +34,7 @@ const products = [
     id: "3",
     category: "Sanpham3",
     image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/208/sp-gbddddw000678-bong-tai-kim-cuong-vang-trang-14k-pnj-first-diamond-1.png",
+      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/213/sp-gnzt00z000001-nhan-vang-10k-dinh-da-synthetic-disney-pnj-01.png",
     description: "1,75 qqasfergrefadf",
     price: "9.875 $",
     quantitySold: "10",
@@ -43,7 +43,7 @@ const products = [
     id: "4",
     category: "Sanpham4",
     image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/99/gd0000w000583-day-chuyen-vang-trang-y-18k-pnj.png",
+      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/213/sp-gnzt00h000006-nhan-vang-10k-dinh-da-synthetic-disney-pnj-01.png",
     description: "2,99 ergsefdgrqef",
     price: "10.750 $",
     quantitySold: "10",
@@ -51,7 +51,7 @@ const products = [
   // Add more products as needed
 ];
 
-const ProductCard = ({ product }) => (
+const CollectionCard = ({ product }) => (
   <View style={styles.productCard}>
     <Image source={{ uri: product.image }} style={styles.productImage} />
     <Text style={styles.productDescription}>{product.description}</Text>
@@ -60,12 +60,12 @@ const ProductCard = ({ product }) => (
   </View>
 );
 
-const NewProduct = () => {
+const NewCollection = () => {
   return (
     <View style={styles.container}>
       <View style={tw`flex-row justify-between items-center`}>
         <Text style={tw`text-white text-xl font-bold ml-2 mb-2`}>
-          New Product
+          New Collections
         </Text>
         <TouchableOpacity style={tw`flex-row items-center`}>
           <Text style={tw`text-white text-base font-light ml-2 mb-2`}>
@@ -82,9 +82,9 @@ const NewProduct = () => {
       </View>
       <FlatList
         data={products}
-        renderItem={({ item }) => <ProductCard product={item} />}
+        renderItem={({ item }) => <CollectionCard product={item} />}
         keyExtractor={(item) => item.id}
-        horizontal={true} // Enable horizontal scrolling
+        horizontal={true}
         contentContainerStyle={styles.productList}
       />
     </View>
@@ -153,4 +153,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NewProduct;
+export default NewCollection;

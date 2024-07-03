@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Image } from "react-native";
 import { Carousel } from "@ant-design/react-native";
-
+import tw from "twrnc";
 const images = [
   "https://www.tierra.vn/files/bannercach-oNYNJcb86Y.jpg",
   "https://fifthandfine.com/cdn/shop/files/3200x1200-shopify-top-banner-grand_5ab78400-8e1b-4815-909b-340790c10123.jpg?v=1710264970",
@@ -48,17 +48,17 @@ const images = [
 
 const CarouselComponent = () => {
   return (
-    <View style={{ marginTop: 0 }}>
-      <View style={{ paddingHorizontal: 15 }}>
+    <View style={tw`mt-0 flex-1`}>
+      <View style={tw`px-5`}>
         <Carousel
-          style={styles.wrapper}
+          style={tw`bg-black w-auto h-30`}
           selectedIndex={0}
           autoplay={true}
           infinite
           // ref={(ref) => (this.carousel = ref)}
         >
           {images.map((image, index) => (
-            <View key={index} style={styles.containerHorizontal}>
+            <View key={index} style={tw``}>
               <Image
                 source={{ uri: image }}
                 style={styles.image}
