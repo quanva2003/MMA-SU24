@@ -12,7 +12,9 @@ import PricesScreen from "./src/screens/PricesScreen";
 import NewsScreen from "./src/screens/NewsScreen";
 import CartScreen from "./src/screens/CartScreen";
 import LoginScreen from "./src/screens/LoginScreen";
-import SignUpScreen from "./src/screens/SignUpScreen"; // Import LoginScreen
+import SignUpScreen from "./src/screens/SignUpScreen";
+import TopProduct from "./src/screens/TopProduct";
+import ProductDetail from "./src/screens/ProductDetail";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,7 +23,7 @@ const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      <Stack.Screen name="CartScreen" component={CartScreen} />
+      {/* <Stack.Screen name="CartScreen" component={CartScreen} /> */}
     </Stack.Navigator>
   );
 };
@@ -38,14 +40,15 @@ const MainTabs = () => {
       initialRouteName="Home"
     >
       <Tab.Screen
-        name="Product"
-        component={ProductScreen}
+        name="News"
+        component={NewsScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <Icon type="Ionicons" name="diamond" color={color} />
+            <Icon type="MaterialIcons" name="newspaper" color={color} />
           ),
         }}
       />
+
       <Tab.Screen
         name="Prices"
         component={PricesScreen}
@@ -65,11 +68,11 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
-        name="News"
-        component={NewsScreen}
+        name="Cart"
+        component={CartScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <Icon type="MaterialIcons" name="newspaper" color={color} />
+            <Icon type="MaterialIcons" name="shopping-cart" color={color} />
           ),
         }}
       />
@@ -95,6 +98,8 @@ function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen name="TopProduct" component={TopProduct} />
+          <Stack.Screen name="ProductDetail" component={ProductDetail} />
         </Stack.Navigator>
       </SafeAreaProvider>
     </NavigationContainer>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,59 +8,49 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Icon } from "react-native-elements";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import tw from "twrnc";
 
-const categories = ["Tüm Ürünler", "Yüzük", "Kolye"];
-const products = [
-  {
-    id: "1",
-    category: "Sanpham1",
-    image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/99/gd0000w000583-day-chuyen-vang-trang-y-18k-pnj.png",
-    description: "1,75 qqasfergrefadf",
-    price: "9.875 $",
-    quantitySold: "10",
-  },
-  {
-    id: "2",
-    category: "Sanpham2",
-    image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/208/sp-gbddddw000678-bong-tai-kim-cuong-vang-trang-14k-pnj-first-diamond-1.png",
-    description: "2,99 ergsefdgrqef",
-    price: "10.750 $",
-    quantitySold: "10",
-  },
-  {
-    id: "3",
-    category: "Sanpham3",
-    image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/208/sp-gbddddw000678-bong-tai-kim-cuong-vang-trang-14k-pnj-first-diamond-1.png",
-    description: "1,75 qqasfergrefadf",
-    price: "9.875 $",
-    quantitySold: "10",
-  },
-  {
-    id: "4",
-    category: "Sanpham4",
-    image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/99/gd0000w000583-day-chuyen-vang-trang-y-18k-pnj.png",
-    description: "2,99 ergsefdgrqef",
-    price: "10.750 $",
-    quantitySold: "10",
-  },
-  // Add more products as needed
-];
-
-const ProductCard = ({ product }) => (
-  <View style={styles.productCard}>
-    <Image source={{ uri: product.image }} style={styles.productImage} />
-    <Text style={styles.productDescription}>{product.description}</Text>
-    <Text style={styles.productPrice}>{product.price}</Text>
-    <Text style={tw`text-white `}>{product.quantitySold} sold</Text>
-  </View>
+const ProductCard = ({ product, navigate }) => (
+  <TouchableOpacity
+    onPress={() => navigate.navigate("ProductDetail", { product })}
+    style={styles.productCard}
+  >
+    <Image source={{ uri: product.image[0] }} style={styles.productImage} />
+    <Text style={styles.productDescription}>{product.category}</Text>
+    <Text style={styles.productPrice}>{product.price}$</Text>
+    <Text style={tw`text-white`}>{product.quantitySold} sold</Text>
+  </TouchableOpacity>
 );
 
 const NewProduct = () => {
+  const navigate = useNavigation();
+  const [productData, setProductData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .get("https://6686443583c983911b01668f.mockapi.io/product")
+      .then((response) => {
+        console.log(response.data);
+        setProductData(response.data);
+        setLoading(false); // Set loading to false when data is fetched
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false); // Set loading to false on error as well
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={tw`flex-row justify-between items-center`}>
@@ -81,8 +71,10 @@ const NewProduct = () => {
         </TouchableOpacity>
       </View>
       <FlatList
-        data={products}
-        renderItem={({ item }) => <ProductCard product={item} />}
+        data={productData}
+        renderItem={({ item }) => (
+          <ProductCard product={item} navigate={navigate} />
+        )}
         keyExtractor={(item) => item.id}
         horizontal={true} // Enable horizontal scrolling
         contentContainerStyle={styles.productList}
@@ -97,6 +89,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     paddingTop: 40,
     paddingHorizontal: 10,
+  },
+  loadingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#fff",
+    fontSize: 18,
   },
   topHeader: {
     color: "#ffffff",
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   productCard: {
+    width: 150,
     backgroundColor: "#1c1c1c",
     borderRadius: 10,
     padding: 10,

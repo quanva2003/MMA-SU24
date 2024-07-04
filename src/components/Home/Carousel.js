@@ -8,44 +8,6 @@ const images = [
   "https://images.ctfassets.net/7m8i36sp5l90/2OjntdC41RkFSwyp96bD6U/ffeaf63f154c47cf3d102f1c7ba59be1/forever-gifts_thumb2.jpg",
 ];
 
-// export default class BasicCarouselExample extends React.Component {
-//   // carousel = null;
-
-//   // constructor(props) {
-//   //   super(props);
-//   //   this.state = {
-//   //     selectedIndex: 0,
-//   //     autoplay: true,
-//   //   };
-//   // }
-
-//   render() {
-//     return (
-//       <View style={{ marginTop: 0 }}>
-//         <View style={{ paddingHorizontal: 15 }}>
-//           <Carousel
-//             style={styles.wrapper}
-//             selectedIndex={0}
-//             autoplay={true}
-//             infinite
-//             // ref={(ref) => (this.carousel = ref)}
-//           >
-//             {images.map((image, index) => (
-//               <View key={index} style={styles.containerHorizontal}>
-//                 <Image
-//                   source={{ uri: image }}
-//                   style={styles.image}
-//                   resizeMode="cover"
-//                 />
-//               </View>
-//             ))}
-//           </Carousel>
-//         </View>
-//       </View>
-//     );
-//   }
-// }
-
 const CarouselComponent = () => {
   return (
     <View style={tw`mt-0 flex-1`}>

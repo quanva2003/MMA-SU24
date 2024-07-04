@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
   StyleSheet,
@@ -10,7 +11,6 @@ import {
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
 
-const categories = ["Tüm Ürünler", "Yüzük", "Kolye"];
 const products = [
   {
     id: "1",
@@ -48,7 +48,6 @@ const products = [
     price: "10.750 $",
     quantitySold: "10",
   },
-  // Add more products as needed
 ];
 
 const ProductCard = ({ product }) => (
@@ -61,20 +60,18 @@ const ProductCard = ({ product }) => (
 );
 
 const Category = () => {
-  const [selectedCategory, setSelectedCategory] = React.useState("Tüm Ürünler");
-
-  const filteredProducts =
-    selectedCategory === "Tüm Ürünler"
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+  const navigate = useNavigation();
 
   return (
     <View style={styles.container}>
       <View style={tw`flex-row justify-between items-center`}>
         <Text style={tw`text-white text-xl font-bold ml-2 mb-2`}>
-          Top Category
+          Top Product
         </Text>
-        <TouchableOpacity style={tw`flex-row items-center`}>
+        <TouchableOpacity
+          onPress={() => navigate.navigate("TopProduct")}
+          style={tw`flex-row items-center`}
+        >
           <Text style={tw`text-white text-base font-light ml-2 mb-2`}>
             See more
           </Text>
@@ -87,32 +84,12 @@ const Category = () => {
           />
         </TouchableOpacity>
       </View>
-      {/* <View style={styles.categoryContainer}>
-        {categories.map((category, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.categoryButton,
-              selectedCategory === category && styles.selectedCategoryButton,
-            ]}
-            onPress={() => setSelectedCategory(category)}
-          >
-            <Text
-              style={[
-                styles.categoryText,
-                selectedCategory === category && styles.selectedCategoryText,
-              ]}
-            >
-              {category}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View> */}
+
       <FlatList
         data={products}
         renderItem={({ item }) => <ProductCard product={item} />}
         keyExtractor={(item) => item.id}
-        horizontal={true} // Enable horizontal scrolling
+        horizontal={true}
         contentContainerStyle={styles.productList}
       />
     </View>
