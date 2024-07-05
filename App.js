@@ -15,6 +15,9 @@ import LoginScreen from "./src/screens/LoginScreen";
 import SignUpScreen from "./src/screens/SignUpScreen";
 import TopProduct from "./src/screens/TopProduct";
 import ProductDetail from "./src/screens/ProductDetail";
+import SaleScreen from "./src/screens/SaleScreen";
+import CheckOrderScreen from "./src/screens/CheckOrderScreen";
+import CustomerPointsScreen from "./src/screens/CustomerPointsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -77,6 +80,15 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
+        name="Sale"
+        component={SaleScreen}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Icon type="MaterialIcons" name="point-of-sale" color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Account"
         component={AccountScreen}
         options={{
@@ -100,6 +112,8 @@ function App() {
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen name="TopProduct" component={TopProduct} />
           <Stack.Screen name="ProductDetail" component={ProductDetail} />
+          <Stack.Screen name="CheckOrder" component={CheckOrderScreen}/>
+          <Stack.Screen name="CustomerPoints" component={CustomerPointsScreen}/>
         </Stack.Navigator>
       </SafeAreaProvider>
     </NavigationContainer>
