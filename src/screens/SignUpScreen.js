@@ -1,20 +1,69 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import axios from "axios";
 
 const SignUpScreen = ({ navigation }) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const handleSignUp = () => {
-    // Add your sign-up logic here
+    if (password !== confirmPassword) {
+      Alert.alert("Password Mismatch", "Passwords do not match.");
+      return;
+    }
+
+    axios.post("http://192.168.191.1:8000/api/users/register", {
+      name: name,
+      email: email,
+      password: password,
+    })
+      .then((res) => {
+        console.log("Success", res.data);
+        // Navigate to main screen if signup is successful
+        navigation.navigate("Login");
+      })
+      .catch((err) => {
+        console.error("Error", err);
+        Alert.alert("Sign Up Failed", "Please check your details and try again.");
+      });
     console.log("Sign Up button pressed");
-    navigation.navigate("Login");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
-      <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#ccc" />
-      <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#ccc" />
-      <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#ccc" secureTextEntry />
-      <TextInput style={styles.input} placeholder="Confirm Password" placeholderTextColor="#ccc" secureTextEntry />
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        placeholderTextColor="#ccc"
+        value={name}
+        onChangeText={(text) => setName(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        placeholderTextColor="#ccc"
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#ccc"
+        secureTextEntry
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        placeholderTextColor="#ccc"
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={(text) => setConfirmPassword(text)}
+      />
       <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
         <Text style={styles.signUpButtonText}>Sign Up</Text>
       </TouchableOpacity>
