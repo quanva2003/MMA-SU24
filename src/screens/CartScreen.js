@@ -8,6 +8,8 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Modal,
+  Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { List, Stepper } from "@ant-design/react-native";
@@ -36,7 +38,7 @@ const cartItems = [
 const CartScreen = () => {
   const navigation = useNavigation();
   const [totalPrice, setTotalPrice] = useState(0);
-
+  const [modalVisible, setModalVisible] = useState(false);
   useEffect(() => {
     calculateTotalPrice();
   }, []);
@@ -94,8 +96,47 @@ const CartScreen = () => {
 
       <View style={styles.footer}>
         <Text style={styles.totalText}>Total: {totalPrice}$</Text>
-        <Button title="BUY " onPress={() => {}} />
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={styles.buyBtn}
+        >
+          <Text style={tw`text-white font-bold text-lg`}>BUY IT</Text>
+        </TouchableOpacity>
       </View>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Are u sure your item before choose NI ?
+            </Text>
+            <View style={styles.modalFooter}>
+              <Pressable
+                style={[styles.button, styles.btnClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.btnConfirm]}
+                onPress={() => {
+                  navigation.navigate("ChooseNi");
+                  setModalVisible(!modalVisible);
+                }}
+              >
+                <Text style={styles.textStyle}>Yes :)))</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -158,12 +199,70 @@ const styles = StyleSheet.create({
     borderColor: "#555",
     paddingVertical: 10,
     alignItems: "center",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   totalText: {
     color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  buyBtn: {
+    backgroundColor: "#212121",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    width: "40%",
+    alignItems: "center",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+
+  btnClose: {
+    backgroundColor: "#999999",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  modalFooter: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 10,
+  },
+  btnConfirm: {
+    backgroundColor: "#212121",
   },
 });
 

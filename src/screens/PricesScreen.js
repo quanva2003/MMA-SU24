@@ -7,6 +7,7 @@ import {
   FlatList,
   CheckBox,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import { Checkbox, Slider } from "@ant-design/react-native";
 
@@ -106,8 +107,12 @@ const PriceComponent = () => {
         <Text style={{ color: "#fff" }}>{size[0].toFixed(1)}</Text>
         <Text style={{ color: "#fff" }}>{size[1].toFixed(1)}</Text>
       </View>
-
-      <Button title="Show Results" onPress={filterDiamonds} />
+      <View style={{ alignItems: "center" }}>
+        <TouchableOpacity onPress={filterDiamonds} style={styles.resultBtn}>
+          <Text style={{ color: "#fff", fontWeight: 700 }}>SHOW RESULTS</Text>
+        </TouchableOpacity>
+      </View>
+      {/* <Button title="Show Results" onPress={filterDiamonds} /> */}
 
       {filteredDiamonds.length > 0 && (
         <View style={styles.resultsContainer}>
@@ -200,6 +205,16 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     marginRight: 10,
+    borderRadius: 10,
+  },
+  resultBtn: {
+    backgroundColor: "#212121",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    width: "80%",
+    alignItems: "center",
+    borderRadius: 12,
+    marginTop: 30,
   },
 });
 

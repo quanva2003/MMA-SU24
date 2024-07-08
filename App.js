@@ -18,6 +18,7 @@ import ProductDetail from "./src/screens/ProductDetail";
 import SaleScreen from "./src/screens/SaleScreen";
 import CheckOrderScreen from "./src/screens/CheckOrderScreen";
 import CustomerPointsScreen from "./src/screens/CustomerPointsScreen";
+import ChooseNi from "./src/screens/ChooseNi";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,7 +38,7 @@ const MainTabs = () => {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#ffffff",
-        tabBarInactiveTintColor: "#cccccc",
+        tabBarInactiveTintColor: "#212121",
         tabBarStyle: { backgroundColor: "#000000" },
       }}
       initialRouteName="Home"
@@ -112,8 +113,12 @@ function App() {
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen name="TopProduct" component={TopProduct} />
           <Stack.Screen name="ProductDetail" component={ProductDetail} />
-          <Stack.Screen name="CheckOrder" component={CheckOrderScreen}/>
-          <Stack.Screen name="CustomerPoints" component={CustomerPointsScreen}/>
+          <Stack.Screen name="CheckOrder" component={CheckOrderScreen} />
+          <Stack.Screen name="ChooseNi" component={ChooseNi} />
+          <Stack.Screen
+            name="CustomerPoints"
+            component={CustomerPointsScreen}
+          />
         </Stack.Navigator>
       </SafeAreaProvider>
     </NavigationContainer>
