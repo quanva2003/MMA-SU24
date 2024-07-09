@@ -115,7 +115,7 @@ const CartScreen = () => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
-              Are u sure your item before choose NI ?
+              Are u sure your item before choose size?
             </Text>
             <View style={styles.modalFooter}>
               <Pressable
