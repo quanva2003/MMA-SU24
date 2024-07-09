@@ -32,12 +32,12 @@ const Navbar = () => {
             placeholderTextColor="#FFFFFF"
           />
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.cartContainer}
           onPress={() => navigation.navigate("CartScreen")}
         >
           <Icon type="MaterialIcons" name="shopping-cart" color="#ffffff" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );

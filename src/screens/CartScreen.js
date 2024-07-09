@@ -1,6 +1,5 @@
-// CartScreen.js
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,35 +10,59 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
+import { List, Stepper } from "@ant-design/react-native";
+import tw from "twrnc";
 const cartItems = [
   {
     id: "1",
-    name: "2,99 Karat Pırlanta Yüzük",
-    size: "Boyut: 3.5",
-    price: "10.750 ₺",
-    image: require("../../assets/LOGO.png"), // replace with your image path
+    name: "White ring 10K synthentic STYLE",
+    size: "3.9",
+    price: "200",
+    image:
+      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/176/sp-gnztztw000012-nhan-vang-trang-10k-dinh-da-sythertic-style-by-pnj-unisex-1.png",
+    quantity: 1,
   },
   {
     id: "2",
-    name: "Sevgililer gününe özel hediye bileklik",
-    size: "",
-    price: "0 ₺",
-    image: require("../../assets/LOGO.png"), // replace with your image path
+    name: "White ring 20K synthentic STYLE",
+    size: "4.2",
+    price: "300",
+    image:
+      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/176/sp-gnztztw000012-nhan-vang-trang-10k-dinh-da-sythertic-style-by-pnj-unisex-1.png",
+    quantity: 1,
   },
 ];
 
 const CartScreen = () => {
   const navigation = useNavigation();
+  const [totalPrice, setTotalPrice] = useState(0);
 
+  useEffect(() => {
+    calculateTotalPrice();
+  }, []);
+
+  const handleQuantityChange = (value, id) => {
+    const updatedCartItems = cartItems.map((item) =>
+      item.id === id ? { ...item, quantity: value } : item
+    );
+    calculateTotalPrice(updatedCartItems);
+  };
+
+  const calculateTotalPrice = (items = cartItems) => {
+    const total = items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    setTotalPrice(total);
+  };
   return (
     <View style={styles.container}>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
         <Icon name="arrow-back" size={24} color="#fff" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <Text style={styles.header}>Cart</Text>
 
       <FlatList
@@ -47,15 +70,22 @@ const CartScreen = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.cartItem}>
-            <Image source={item.image} style={styles.itemImage} />
+            <Image source={{ uri: item.image }} style={styles.itemImage} />
             <View style={styles.itemDetails}>
               <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemSize}>{item.size}</Text>
-              <Text style={styles.itemPrice}>{item.price}</Text>
+              <Text style={styles.itemSize}>Size: {item.size}</Text>
+              <Text style={styles.itemPrice}>Price: {item.price}$</Text>
               <View style={styles.quantityContainer}>
-                <Icon name="remove" size={24} color="#fff" />
+                {/* <Icon name="remove" size={24} color="#fff" />
                 <Text style={styles.quantityText}>1</Text>
-                <Icon name="add" size={24} color="#fff" />
+                <Icon name="add" size={24} color="#fff" /> */}
+                <Stepper
+                  max={10}
+                  min={1}
+                  defaultValue={item.quantity}
+                  onChange={(value) => handleQuantityChange(value, item.id)}
+                  inputStyle={tw`text-white`}
+                />
               </View>
             </View>
           </View>
@@ -63,8 +93,8 @@ const CartScreen = () => {
       />
 
       <View style={styles.footer}>
-        <Text style={styles.totalText}>Toplam 10.750 ₺</Text>
-        <Button title="Sepeti Onayla" onPress={() => {}} />
+        <Text style={styles.totalText}>Total: {totalPrice}$</Text>
+        <Button title="BUY " onPress={() => {}} />
       </View>
     </View>
   );
@@ -115,8 +145,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   quantityContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    width: "35%",
     marginTop: 5,
   },
   quantityText: {

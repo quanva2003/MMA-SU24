@@ -10,10 +10,11 @@ import {
 } from "react-native";
 import { Icon } from "react-native-elements";
 
-const AccountScreen = () => {
+const AccountScreen = ({ navigation }) => {
   const handleLogout = () => {
     // Add your logout logic here
     console.log("Logout button pressed");
+    navigation.navigate("Login");
   };
 
   return (
