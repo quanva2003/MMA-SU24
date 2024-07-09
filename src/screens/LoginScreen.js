@@ -1,11 +1,36 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import axios from "axios";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
 
 const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const handleLogin = () => {
-    // Add your login logic here
-    console.log("Login button pressed");
-    navigation.navigate("Main");
+    axios
+      .post("http://192.168.2.3:8000/api/users/login", {
+        email: email,
+        password: password,
+      })
+      .then((res) => {
+        console.log("Success", res.data);
+        // Navigate to main screen if login is successful
+        navigation.navigate("Main");
+      })
+      .catch((err) => {
+        console.error("Error", err);
+        Alert.alert(
+          "Login Failed",
+          "Please check your credentials and try again."
+        );
+      });
   };
 
   const handleSignUp = () => {
@@ -15,8 +40,23 @@ const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#ccc" />
-      <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#ccc" secureTextEntry />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        placeholderTextColor="#ccc"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#ccc"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>

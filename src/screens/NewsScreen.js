@@ -1,78 +1,40 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, FlatList } from "react-native";
+import tw from "twrnc";
+import MixMatch from "../components/News/MixMatch";
+import Wedding from "../components/News/Wedding";
+import GiftSuggestion from "../components/News/GiftSuggestion";
+import JewerlyKnowledge from "../components/News/JewerlyKnowledge";
+import Questions from "../components/News/Questions";
 
-// Sample data for news
-const newsItems = [
-  {
-    id: "1",
-    title: "Latest Trends in Diamond Jewelry",
-    description: "Discover the newest trends in diamond jewelry for 2024...",
-  },
-  {
-    id: "2",
-    title: "How to Choose the Perfect Diamond",
-    description:
-      "Tips and tricks for selecting the best diamond for your needs...",
-  },
-  // Add more news items here
+const sections = [
+  { title: "Mix Match", component: <MixMatch /> },
+  { title: "Wedding", component: <Wedding /> },
+  { title: "Gift", component: <GiftSuggestion /> },
+  { title: "Know", component: <JewerlyKnowledge /> },
+  { title: "Question", component: <Questions /> },
 ];
 
-// QuestionSection Component
-const QuestionSection = () => {
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Question about Diamonds</Text>
-      <Text style={styles.question}>
-        What is the difference between a diamond and a moissanite?
-      </Text>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Learn More</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-// NewsSection Component
-const NewsSection = () => {
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Diamond News</Text>
-      <FlatList
-        data={newsItems}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.newsItem}>
-            <Text style={styles.newsTitle}>{item.title}</Text>
-            <Text style={styles.newsDescription}>{item.description}</Text>
-          </View>
-        )}
-      />
-    </View>
-  );
-};
-
-// News Component
 const News = () => {
   return (
-    <View style={styles.container}>
-      <QuestionSection />
-      <NewsSection />
-    </View>
+    <FlatList
+      data={sections}
+      keyExtractor={(item) => item.title}
+      renderItem={({ item }) => (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{item.title}</Text>
+          {item.component}
+        </View>
+      )}
+      contentContainerStyle={styles.container}
+    />
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#000",
-    padding: 16,
+    padding: 20,
     marginTop: 30,
   },
   section: {
@@ -83,38 +45,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  question: {
-    color: "#aaa",
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: "#555",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  newsItem: {
-    backgroundColor: "#333",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  newsTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  newsDescription: {
-    color: "#aaa",
-    fontSize: 14,
   },
 });
 

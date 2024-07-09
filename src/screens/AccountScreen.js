@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   changeProfileText: {
-    color: "#FF6F61",
+    color: "#fff",
     fontSize: 16,
   },
   reportsContainer: {
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   cardHeader: {
     display: "flex",
     flexDirection: "row",
-    gap: 5,
+    gap: 10,
   },
   reportsTitle: {
     fontSize: 24,
@@ -153,9 +153,9 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
-  highlightedCard: {
-    backgroundColor: "#444",
-  },
+  // highlightedCard: {
+  //   backgroundColor: "#444",
+  // },
   reportTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 10,
     marginTop: 20,
-    backgroundColor: "#FF6F61",
+    backgroundColor: "#212121",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
