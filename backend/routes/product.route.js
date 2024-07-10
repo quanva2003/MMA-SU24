@@ -6,6 +6,8 @@ router.get("/", ProductController.GetAllProduct);
 
 router.get("/:id", ProductController.GetProductById);
 
+router.get("/category/:id", ProductController.GetProductByCategory);
+
 router.get("/shell/:id", ProductController.GetProductByShell);
 
 router.get("/material/:id", ProductController.GetProductByMaterial);
