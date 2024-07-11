@@ -47,8 +47,13 @@ const MainTabs = () => {
         name="News"
         component={NewsScreen}
         options={{
-          tabBarIcon: ({ color }) => (
-            <Icon type="MaterialIcons" name="newspaper" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              type="MaterialIcons"
+              name="newspaper"
+              color={color}
+              size={focused ? 30 : 24} // Increase size if focused
+            />
           ),
         }}
       />
@@ -57,8 +62,13 @@ const MainTabs = () => {
         name="Prices"
         component={PricesScreen}
         options={{
-          tabBarIcon: ({ color }) => (
-            <Icon type="MaterialIcons" name="price-change" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              type="MaterialIcons"
+              name="price-change"
+              color={color}
+              size={focused ? 30 : 24} // Increase size if focused
+            />
           ),
         }}
       />
@@ -66,8 +76,13 @@ const MainTabs = () => {
         name="Home"
         component={HomeStack}
         options={{
-          tabBarIcon: ({ color }) => (
-            <Icon type="MaterialIcons" name="home" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              type="MaterialIcons"
+              name="home"
+              color={color}
+              size={focused ? 30 : 24} // Increase size if focused
+            />
           ),
         }}
       />
@@ -75,8 +90,13 @@ const MainTabs = () => {
         name="Cart"
         component={CartScreen}
         options={{
-          tabBarIcon: ({ color }) => (
-            <Icon type="MaterialIcons" name="shopping-cart" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              type="MaterialIcons"
+              name="shopping-cart"
+              color={color}
+              size={focused ? 30 : 24} // Increase size if focused
+            />
           ),
         }}
       />
@@ -84,8 +104,13 @@ const MainTabs = () => {
         name="Sale"
         component={SaleScreen}
         options={{
-          tabBarIcon: ({ color }) => (
-            <Icon type="MaterialIcons" name="point-of-sale" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              type="MaterialIcons"
+              name="point-of-sale"
+              color={color}
+              size={focused ? 30 : 24} // Increase size if focused
+            />
           ),
         }}
       />
@@ -93,8 +118,13 @@ const MainTabs = () => {
         name="Account"
         component={AccountScreen}
         options={{
-          tabBarIcon: ({ color }) => (
-            <Icon type="antdesign" name="user" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              type="antdesign"
+              name="user"
+              color={color}
+              size={focused ? 30 : 24} // Increase size if focused
+            />
           ),
         }}
       />

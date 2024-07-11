@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import axios from "axios";
 
 const SignUpScreen = ({ navigation }) => {
@@ -14,11 +21,12 @@ const SignUpScreen = ({ navigation }) => {
       return;
     }
 
-    axios.post("http://192.168.191.1:8000/api/users/register", {
-      name: name,
-      email: email,
-      password: password,
-    })
+    axios
+      .post("http://10.0.2.2:8000/api/users/register", {
+        name: name,
+        email: email,
+        password: password,
+      })
       .then((res) => {
         console.log("Success", res.data);
         // Navigate to main screen if signup is successful
@@ -26,7 +34,10 @@ const SignUpScreen = ({ navigation }) => {
       })
       .catch((err) => {
         console.error("Error", err);
-        Alert.alert("Sign Up Failed", "Please check your details and try again.");
+        Alert.alert(
+          "Sign Up Failed",
+          "Please check your details and try again."
+        );
       });
     console.log("Sign Up button pressed");
   };

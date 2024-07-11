@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   itemPrice: {
-    color: "#FFA823",
+    color: "#FFDE4D",
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 5,
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   totalText: {
-    color: "#fff",
+    color: "#FFDE4D",
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
