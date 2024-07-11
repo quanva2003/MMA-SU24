@@ -8,7 +8,9 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -19,6 +21,7 @@ const LoginScreen = ({ navigation }) => {
       const res = await axios.post("http://10.0.2.2:8000/api/users/login", {
         email: email,
         password: password,
+
       });
       console.log("Success", res.data);
       await AsyncStorage.setItem("userToken", res.data.token);
