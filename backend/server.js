@@ -6,6 +6,8 @@ const diamondRouter = require("./routes/diamond.route.js");
 const shellRouter = require("./routes/shell.route.js");
 const materialRouter = require("./routes/material.route.js");
 const cartItemRouter = require("./routes/cartItem.route.js");
+const stripeRouter = require("./routes/stripe.route.js");
+const addressRouter = require("./routes/address.route.js");
 const orderRouter = require("./routes/order.route.js");
 const orderItemRouter = require("./routes/orderItem.route.js");
 
@@ -26,6 +28,8 @@ app.use("/api/diamonds", diamondRouter);
 app.use("/api/shells", shellRouter);
 app.use("/api/materials", materialRouter);
 app.use("/api/carts", cartItemRouter);
+app.use("/api/stripe", stripeRouter);
+app.use("/api/address", addressRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/orderItems", orderItemRouter);
 
