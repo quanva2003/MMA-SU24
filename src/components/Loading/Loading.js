@@ -15,6 +15,7 @@ export default function Loading() {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
+        zIndex: 50,
       }}
     >
       <Progress.CircleSnail thickness={12} size={160} color={"#D2DA21"} />
