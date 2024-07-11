@@ -6,4 +6,6 @@ router.post("/register", UserController.RegisterUser);
 
 router.post("/login", UserController.LoginUser);
 
+router.get("/getUser/:email", UserController.findUserByEmail);
+
 module.exports = router;

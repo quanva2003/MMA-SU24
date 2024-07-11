@@ -9,28 +9,31 @@ import {
   Alert,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    axios
-      .post("http://10.0.2.2:8000/api/users/login", {
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post("http://10.0.2.2:8000/api/users/login", {
         email: email,
         password: password,
-      })
-      .then((res) => {
-        console.log("Success", res.data);
-        // Navigate to main screen if login is successful
-        navigation.navigate("Main");
-      })
-      .catch((err) => {
-        console.error("Error", err);
-        Alert.alert(
-          "Login Failed",
-          "Please check your credentials and try again."
-        );
+
       });
+      console.log("Success", res.data);
+      await AsyncStorage.setItem("userToken", res.data.token);
+      await AsyncStorage.setItem("userEmail", email);
+      navigation.navigate("Main");
+    } catch (err) {
+      console.error("Error", err);
+      Alert.alert(
+        "Login Failed",
+        "Please check your credentials and try again."
+      );
+    }
   };
 
   const handleSignUp = () => {

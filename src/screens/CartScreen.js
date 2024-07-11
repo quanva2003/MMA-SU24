@@ -165,6 +165,9 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     marginRight: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   itemDetails: {
     flex: 1,
@@ -180,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   itemPrice: {
-    color: "#fff",
+    color: "#FFDE4D",
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 5,
@@ -204,7 +207,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   totalText: {
-    color: "#fff",
+    color: "#FFDE4D",
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
