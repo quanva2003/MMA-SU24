@@ -8,6 +8,8 @@ router.get("/:id", ProductController.GetProductById);
 
 router.get("/category/:id", ProductController.GetProductByCategory);
 
+router.get("/name/:name", ProductController.GetProductByName);
+
 router.get("/shell/:id", ProductController.GetProductByShell);
 
 router.get("/material/:id", ProductController.GetProductByMaterial);

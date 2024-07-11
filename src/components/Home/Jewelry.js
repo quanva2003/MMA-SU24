@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
   View,
@@ -6,6 +7,7 @@ import {
   FlatList,
   StyleSheet,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
@@ -15,51 +17,43 @@ const data = [
     id: "1",
     image:
       "https://cdn.pnj.io/images/image-update/2022/hot-categories/bong-tai-kim-cuong.png",
-    label: "Bông Tai ",
+    label: "Earrings ",
   },
   {
     id: "2",
     image:
       "https://cdn.pnj.io/images/image-update/2022/hot-categories/nhan-kim-cuong.png",
-    label: "Nhẫn Kim Cương",
+    label: "Ring",
   },
   {
     id: "3",
     image:
       "https://cdn.pnj.io/images/image-update/2022/hot-categories/vong-lac-tay-bac.png",
-    label: "Lắc - Vòng Tay",
+    label: "Bracelet",
   },
   {
     id: "4",
     image:
-      "https://images.ctfassets.net/7m8i36sp5l90/2OjntdC41RkFSwyp96bD6U/ffeaf63f154c47cf3d102f1c7ba59be1/forever-gifts_thumb2.jpg",
-    label: "Đồng Hồ",
-  },
-  {
-    id: "5",
-    image:
       "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
-    label: "Dây Chuyền",
-  },
-  {
-    id: "6",
-    image:
-      "https://cdn.pnj.io/images/image-update/2022/hot-categories/nhan-cuoi.png",
-    label: "Nhẫn Cưới",
+    label: "Necklace",
   },
 ];
 
 const Jewelry = () => {
+  const navigate = useNavigation();
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity
+      onPress={() => navigate.navigate("Shell")}
+      style={styles.itemContainer}
+    >
       <Image source={{ uri: item.image }} style={styles.itemImage} />
       <Text style={styles.itemLabel}>{item.label}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Hot Search</Text>
+      <Text style={styles.title}>Shells</Text>
       <FlatList
         horizontal
         data={data}

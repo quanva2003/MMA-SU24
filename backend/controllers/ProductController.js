@@ -4,11 +4,14 @@ module.exports = {
   //endpoint for get all products
   GetAllProduct: async (req, res) => {
     try {
-      const product = await Product.find().populate("diamondId", "type").populate("shellId", "shellName category").populate("materialId", "materialName");
+      const product = await Product.find()
+        .populate("diamondId", "type")
+        .populate("shellId", "shellName category size")
+        .populate("materialId", "materialName");
       res.status(200).json(product);
     } catch (error) {
       console.log("Error get all product!", error);
-      res.status(500).json({ message: "Error get all product!!!" })
+      res.status(500).json({ message: "Error get all product!!!" });
     }
   },
 
@@ -16,11 +19,29 @@ module.exports = {
   GetProductById: async (req, res) => {
     try {
       const { id: productId } = req.params;
-      const product = await Product.findById(productId).populate("diamondId", "type").populate("shellId materialId");
+      const product = await Product.findById(productId)
+        .populate("diamondId", "type")
+        .populate("shellId materialId");
       res.status(200).json(product);
     } catch (error) {
       console.log("Error get product by id!", error);
-      res.status(500).json({ message: "Error get product!!!" })
+      res.status(500).json({ message: "Error get product!!!" });
+    }
+  },
+
+  GetProductByName: async (req, res) => {
+    try {
+      const { name } = req.params;
+      const regex = new RegExp(name, "i");
+      const products = await Product.find({ productName: regex })
+        .populate("diamondId", "type")
+        .populate("shellId", "shellName category size")
+        .populate("materialId", "materialName");
+
+      res.status(200).json(products);
+    } catch (error) {
+      console.error("Error get product by name!", error);
+      res.status(500).json({ message: "Error get product by name!!!" });
     }
   },
 
@@ -30,15 +51,18 @@ module.exports = {
       const product = await Product.find()
         .populate("diamondId materialId", "type materialName")
         .populate({
-          path: 'shellId',
+          path: "shellId",
           match: { category: category },
-          select: '-createdAt -updatedAt -__v'
-        }).exec();
-      const filteredProducts = product.filter(product => product.shellId !== null);
+          select: "-createdAt -updatedAt -__v",
+        })
+        .exec();
+      const filteredProducts = product.filter(
+        (product) => product.shellId !== null
+      );
       res.status(200).json(filteredProducts);
     } catch (error) {
       console.log("Error get product by category!", error);
-      res.status(500).json({ message: "Error get product!!!" })
+      res.status(500).json({ message: "Error get product!!!" });
     }
   },
 
@@ -48,15 +72,18 @@ module.exports = {
       const product = await Product.find()
         .populate("diamondId materialId", "type materialName")
         .populate({
-          path: 'shellId',
+          path: "shellId",
           match: { shellName: shellName },
-          select: '-createdAt -updatedAt -__v'
-        }).exec();
-      const filteredProducts = product.filter(product => product.shellId !== null);
+          select: "-createdAt -updatedAt -__v",
+        })
+        .exec();
+      const filteredProducts = product.filter(
+        (product) => product.shellId !== null
+      );
       res.status(200).json(filteredProducts);
     } catch (error) {
       console.log("Error get product by id!", error);
-      res.status(500).json({ message: "Error get product!!!" })
+      res.status(500).json({ message: "Error get product!!!" });
     }
   },
 
@@ -66,15 +93,18 @@ module.exports = {
       const product = await Product.find()
         .populate("diamondId shellId", "type shellName category")
         .populate({
-          path: 'materialId',
+          path: "materialId",
           match: { materialName: materialName },
-          select: '-createdAt -updatedAt -__v'
-        }).exec();
-      const filteredProducts = product.filter(product => product.materialId !== null);
+          select: "-createdAt -updatedAt -__v",
+        })
+        .exec();
+      const filteredProducts = product.filter(
+        (product) => product.materialId !== null
+      );
       res.status(200).json(filteredProducts);
     } catch (error) {
       console.log("Error get product by id!", error);
-      res.status(500).json({ message: "Error get product!!!" })
+      res.status(500).json({ message: "Error get product!!!" });
     }
   },
 
@@ -83,7 +113,11 @@ module.exports = {
     const { diamondId, shellId, materialId } = req.body;
 
     try {
-      const existProduct = await Product.findOne({ diamondId: diamondId, shellId: shellId, materialId: materialId });
+      const existProduct = await Product.findOne({
+        diamondId: diamondId,
+        shellId: shellId,
+        materialId: materialId,
+      });
 
       if (existProduct) {
         return res.status(400).json({ message: "Product already exist" });
@@ -94,18 +128,20 @@ module.exports = {
       res.status(200).json(product);
     } catch (error) {
       console.log("Error add product!", error);
-      res.status(500).json({ message: "Error add product!!!" })
+      res.status(500).json({ message: "Error add product!!!" });
     }
   },
 
   UpdateProduct: async (req, res) => {
     const { id: productId } = req.params;
     try {
-      const product = await Product.findByIdAndUpdate(productId, { quantity: req.body })
+      const product = await Product.findByIdAndUpdate(productId, {
+        quantity: req.body,
+      });
       res.status(200).json(product);
     } catch (error) {
       console.log("Error update product!", error);
-      res.status(500).json({ message: "Error update product!!!" })
+      res.status(500).json({ message: "Error update product!!!" });
     }
   },
 
@@ -116,7 +152,7 @@ module.exports = {
       res.status(200).json(product);
     } catch (error) {
       console.log("Error delete product!", error);
-      res.status(500).json({ message: "Error delete product!!!" })
+      res.status(500).json({ message: "Error delete product!!!" });
     }
-  }
-}
+  },
+};
