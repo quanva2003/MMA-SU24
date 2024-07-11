@@ -5,21 +5,19 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  category: {
-    type: String,
-    required: true,
-    enum: ['Ring', 'Earrings', 'Necklace', 'Bracelet']
-  },
-  brand: {
-    type: String,
-    required: false,
-  },
-  shell: {
-    type: String,
+  diamondId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Diamond",
     required: true,
   },
-  material: {
-    type: String,
+  shellId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Shell",
+    required: true,
+  },
+  materialId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Material",
     required: true,
   },
   quantity: {
@@ -30,11 +28,11 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  productSize: {
-    type: Number,
+  image: {
+    type: Array,
     required: true,
   },
-  productImage: {
+  description: {
     type: String,
     required: true,
   }
