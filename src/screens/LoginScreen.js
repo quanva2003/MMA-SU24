@@ -7,7 +7,8 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    axios.post("http://192.168.191.1:8000/api/users/login", {
+    navigation.navigate("Main");
+    axios.post("http://10.0.2.2:8000/api/users/login", {
       email: email,
       password: password,
     })
