@@ -8,7 +8,7 @@ import tw from "twrnc";
 
 const ChooseType = () => (
   <View style={styles.stepContainer}>
-    <Text style={styles.stepText}>Choose Type</Text>
+    <Text style={styles.stepText}>Choose Size</Text>
   </View>
 );
 
@@ -42,7 +42,7 @@ const stepIndicatorStyles = {
   currentStepLabelColor: "#ccc",
 };
 
-const stepLabels = ["Choose Jewelry", "Choose Type", "Confirm"];
+const stepLabels = ["Choose Jewelry", "Choose Size", "Confirm"];
 
 const ChooseNi = () => {
   const [currentPosition, setCurrentPosition] = useState(0);
