@@ -17,25 +17,29 @@ const data = [
     id: "1",
     image:
       "https://cdn.pnj.io/images/image-update/2022/hot-categories/bong-tai-kim-cuong.png",
-    label: "Earrings ",
+    label: "Earrings",
+    category: "earrings",
   },
   {
     id: "2",
     image:
       "https://cdn.pnj.io/images/image-update/2022/hot-categories/nhan-kim-cuong.png",
     label: "Ring",
+    category: "ring",
   },
   {
     id: "3",
     image:
       "https://cdn.pnj.io/images/image-update/2022/hot-categories/vong-lac-tay-bac.png",
     label: "Bracelet",
+    category: "bracelet",
   },
   {
     id: "4",
     image:
       "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
     label: "Necklace",
+    category: "necklace",
   },
 ];
 
@@ -43,7 +47,7 @@ const Jewelry = () => {
   const navigate = useNavigation();
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => navigate.navigate("Shell")}
+      onPress={() => navigate.navigate("Shell", { category: item.category })}
       style={styles.itemContainer}
     >
       <Image source={{ uri: item.image }} style={styles.itemImage} />
