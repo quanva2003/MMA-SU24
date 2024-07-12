@@ -58,7 +58,7 @@ const PriceComponent = () => {
         style={styles.slider}
         minimumValue={0}
         maximumValue={colorLabels.length - 1}
-        step={1 / 3}
+        step={0.5}
         value={color}
         onChange={(value) => {
           setColor(colorLabels[Math.round(value * 3)]);
@@ -94,9 +94,9 @@ const PriceComponent = () => {
       <Text style={styles.label}>Kích thước (mm/ly):</Text>
       <Slider
         style={styles.slider}
-        minimumValue={3.6}
-        maximumValue={10.2}
-        step={0.1}
+        minimumValue={7}
+        maximumValue={10}
+        step={1 / 3}
         value={size[1]}
         onChange={(val) => {
           value = Math.round((3.6 + val * 6.6) * 10) / 10;
