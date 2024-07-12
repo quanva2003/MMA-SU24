@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   SafeAreaView,
@@ -14,87 +14,29 @@ import { Icon, Card, Button } from "react-native-elements";
 import tw from "twrnc";
 import moment from "moment"; // Import moment for date comparison
 
-const orders = [
-  {
-    transactionId: "123456",
-    price: "$100",
-    deliveryRequired: true,
-    status: "Delivered",
-    date: "2024-07-11",
-    avatar:
-      "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
-    quantity: 2,
-  },
-  {
-    transactionId: "789012",
-    price: "$200",
-    deliveryRequired: false,
-    status: "Pending",
-    date: "2024-07-11",
-    avatar:
-      "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
-    quantity: 1,
-  },
-  {
-    transactionId: "345678",
-    price: "$150",
-    deliveryRequired: true,
-    status: "Shipped",
-    date: "2024-07-11",
-    avatar:
-      "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
-    quantity: 3,
-  },
-  {
-    transactionId: "901234",
-    price: "$250",
-    deliveryRequired: true,
-    status: "Delivered",
-    date: "2024-07-11",
-    avatar:
-      "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
-    quantity: 1,
-  },
-  {
-    transactionId: "567890",
-    price: "$300",
-    deliveryRequired: false,
-    status: "Cancelled",
-    date: "2024-07-11",
-    avatar:
-      "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
-    quantity: 4,
-  },
-  {
-    transactionId: "012345",
-    price: "$350",
-    deliveryRequired: true,
-    status: "Pending",
-    date: "2024-07-11",
-    avatar:
-      "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
-    quantity: 2,
-  },
-  {
-    transactionId: "012345",
-    price: "$350",
-    deliveryRequired: true,
-    status: "Pending",
-    date: "2024-07-11",
-    avatar:
-      "https://cdn.pnj.io/images/image-update/2022/hot-categories/trang-suc-bac.png",
-    quantity: 2,
-  },
-];
-
 const ManageOrdersScreen = () => {
   const [tab, setTab] = useState("upcoming");
+  const [orders, setOrders] = useState([]);
   const navigate = useNavigation();
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/orders/");
+        setOrders(response.data);
+        console.log("Fetched orders:", response.data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   // Filter orders based on the selected tab
   const today = moment().startOf("day"); // Get today's date at the start of the day
   const filteredOrders = orders.filter((order) => {
-    const orderDate = moment(order.date, "YYYY-MM-DD").startOf("day");
+    const orderDate = moment(order.createdAt).startOf("day");
     if (tab === "upcoming") {
       return orderDate.isSameOrAfter(today);
     } else if (tab === "past") {
@@ -173,10 +115,15 @@ const ManageOrdersScreen = () => {
                 </View>
                 <Card.Divider />
                 <View>
-                  <Text style={tw`text-white`}>Dia chi nhan hang</Text>
-                  <Text style={tw`text-white`}>email</Text>
-                  <Text style={tw`text-white`}>phone number</Text>
-                  <Text style={tw`text-white`}>address</Text>
+                  <Text style={tw`text-white`}>
+                    Email: {order.deliveryInfo.email}
+                  </Text>
+                  <Text style={tw`text-white`}>
+                    Phone Number: {order.deliveryInfo.phoneNumber}
+                  </Text>
+                  <Text style={tw`text-white`}>
+                    Address: {order.deliveryInfo.address}
+                  </Text>
                 </View>
                 <Card.Divider />
 
@@ -199,7 +146,7 @@ const ManageOrdersScreen = () => {
                 </View>
                 <Card.Divider />
                 <View>
-                  <Text style={tw`text-white text-right`}>Price: {order.price}</Text>
+                  <Text style={tw`text-white text-right`}>Price: {order.total}</Text>
                 </View>
 
                 <Card.Divider />
@@ -230,6 +177,8 @@ const ManageOrdersScreen = () => {
 };
 
 export default ManageOrdersScreen;
+
+
 
 {
   /* <Text style={tw`text-white`}>Transaction ID: {order.transactionId}</Text> */
