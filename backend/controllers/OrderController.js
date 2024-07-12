@@ -173,4 +173,32 @@ module.exports = {
       res.status(500).json({ message: "Error delete order items!!!" });
     }
   },
+
+  UpdateOrderStatus: async (req, res) => {
+    try {
+      const { id: orderId } = req.params;
+      const { status } = req.body;
+
+      // Validate the status
+      const validStatuses = ["PENDING", "IN DELIVERY", "COMPLETED", "CANCELED"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status value" });
+      }
+
+      const order = await Order.findByIdAndUpdate(
+        orderId,
+        { status },
+        { new: true }
+      );
+
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.status(200).json(order);
+    } catch (error) {
+      console.log("Error updating order status!", error);
+      res.status(500).json({ message: "Error updating order status!" });
+    }
+  },
 };
