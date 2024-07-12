@@ -5,11 +5,11 @@ module.exports = {
   //endpoint for get all cart items
   GetAllOrders: async (req, res) => {
     try {
-      const order = await Order.find().populate("orderItem").select("-__v");
+      const order = await Order.find().select("-__v");
       res.status(200).json(order);
     } catch (error) {
       console.log("Error get all order!", error);
-      res.status(500).json({ message: "Error get all order!!!" })
+      res.status(500).json({ message: "Error get all order!!!" });
     }
   },
 
@@ -17,7 +17,7 @@ module.exports = {
   GetOrderById: async (req, res) => {
     try {
       const { id: orderId } = req.params;
-      const order = await Order.findById(orderId).populate("orderItem");
+      const order = await Order.findById(orderId);
 
       if (!order) {
         return res.status(404).json({ message: "order not found" });
@@ -26,14 +26,14 @@ module.exports = {
       res.status(200).json(order);
     } catch (error) {
       console.log("Error get order by id!", error);
-      res.status(500).json({ message: "Error get order!!!" })
+      res.status(500).json({ message: "Error get order!!!" });
     }
   },
 
   GetOrderByUser: async (req, res) => {
     try {
-      const { id: userId } = req.params;
-      const order = await Order.findById({ user: userId }).populate("orderItem");
+      const userId = req.params.id;
+      const order = await Order.find({ user: userId });
 
       if (!order) {
         return res.status(404).json({ message: "order not found" });
@@ -42,7 +42,7 @@ module.exports = {
       res.status(200).json(order);
     } catch (error) {
       console.log("Error get order by user!", error);
-      res.status(500).json({ message: "Error get order!!!" })
+      res.status(500).json({ message: "Error get order!!!", error: error });
     }
   },
 
@@ -71,7 +71,9 @@ module.exports = {
       const existingOrder = await Order.findOne({ transactionId });
 
       if (existingOrder) {
-        return res.status(400).json({ message: "Order with this transaction ID already exists!" });
+        return res
+          .status(400)
+          .json({ message: "Order with this transaction ID already exists!" });
       }
 
       const newOrder = new Order(req.body);
@@ -95,10 +97,9 @@ module.exports = {
       res.status(200).json(order);
     } catch (error) {
       console.log("Error delete order!", error);
-      res.status(500).json({ message: "Error delete order!!!" })
+      res.status(500).json({ message: "Error delete order!!!" });
     }
   },
-
 
   //----------------ORDER ITEM----------------------//
   GetAllOrderItems: async (req, res) => {
@@ -107,7 +108,7 @@ module.exports = {
       res.status(200).json(orderItem);
     } catch (error) {
       console.log("Error get all order items!", error);
-      res.status(500).json({ message: "Error get order items!!!" })
+      res.status(500).json({ message: "Error get order items!!!" });
     }
   },
 
@@ -118,7 +119,7 @@ module.exports = {
       res.status(200).json(orderItem);
     } catch (error) {
       console.log("Error get order items!", error);
-      res.status(500).json({ message: "Error get order items!!!" })
+      res.status(500).json({ message: "Error get order items!!!" });
     }
   },
 
@@ -135,14 +136,16 @@ module.exports = {
       res.status(200).json(orderItem);
     } catch (error) {
       console.log("Error add order items!", error);
-      res.status(500).json({ message: "Error add order items!!!" })
+      res.status(500).json({ message: "Error add order items!!!" });
     }
   },
 
   UpdateOrderItemStatus: async (req, res) => {
     try {
       const { id: orderItemId } = req.params;
-      const orderItem = await OrderItem.findByIdAndUpdate(orderItemId, { status: req.body });
+      const orderItem = await OrderItem.findByIdAndUpdate(orderItemId, {
+        status: req.body,
+      });
 
       if (!orderItem) {
         res.status(404).json({ message: "Order Item not found" });
@@ -151,7 +154,7 @@ module.exports = {
       res.status(200).json(orderItem);
     } catch (error) {
       console.log("Error update order items!", error);
-      res.status(500).json({ message: "Error update order items!!!" })
+      res.status(500).json({ message: "Error update order items!!!" });
     }
   },
 
@@ -167,7 +170,7 @@ module.exports = {
       res.status(200).json({ message: "Order Item deleted" });
     } catch (error) {
       console.log("Error delete order items!", error);
-      res.status(500).json({ message: "Error delete order items!!!" })
+      res.status(500).json({ message: "Error delete order items!!!" });
     }
-  }
-}
+  },
+};
