@@ -33,13 +33,30 @@ const ManageOrdersScreen = () => {
     fetchOrders();
   }, []);
 
-  const updateOrderStatus = async (orderId, newStatus) => {
+//   const updateOrderStatus = async (orderId, newStatus) => {
+//     try {
+//       const response = await axios.put(`http://localhost:8000/api/orders/status/${orderId}`, { status: newStatus });
+//       console.log("Order status updated:", response.data);
+//     } catch (error) {
+//       console.error("Error updating order status:", error);
+//     }
+//   };
+
+const updateOrderStatus = async (orderId, newStatus) => {
     try {
+
       const response = await axios.put(
         `http://10.0.2.2:8000/api/orders/status/${orderId}`,
         { status: newStatus }
       );
+
       console.log("Order status updated:", response.data);
+      
+      // Fetch updated list of orders
+      const updatedOrdersResponse = await axios.get("http://10.0.2.2:8000/api/orders/");
+      setOrders(updatedOrdersResponse.data);
+      
+      console.log("Fetched updated orders:", updatedOrdersResponse.data);
     } catch (error) {
       console.error("Error updating order status:", error);
     }
@@ -168,18 +185,22 @@ const ManageOrdersScreen = () => {
 
                 <Card.Divider />
                 <View style={tw`flex-row justify-between mt-2`}>
-                  <Button
-                    title="Completed"
-                    buttonStyle={tw`bg-green-500 px-4 py-2 rounded-md`}
-                    titleStyle={tw`text-white`}
-                    onPress={() => updateOrderStatus(order._id, "COMPLETED")}
-                  />
-                  <Button
-                    title="Not Completed"
-                    buttonStyle={tw`bg-red-500 px-4 py-2 rounded-md`}
-                    titleStyle={tw`text-white`}
-                    onPress={() => updateOrderStatus(order._id, "CANCELED")}
-                  />
+                  {order.status !== "IN DELIVERY" && order.status !== "COMPLETED" && order.status !== "CANCELED" && (
+                    <>
+                      <Button
+                        title="Completed"
+                        buttonStyle={tw`bg-green-500 px-4 py-2 rounded-md`}
+                        titleStyle={tw`text-white`}
+                        onPress={() => updateOrderStatus(order._id, "COMPLETED")}
+                      />
+                      <Button
+                        title="Not Completed"
+                        buttonStyle={tw`bg-red-500 px-4 py-2 rounded-md`}
+                        titleStyle={tw`text-white`}
+                        onPress={() => updateOrderStatus(order._id, "CANCELED")}
+                      />
+                    </>
+                  )}
                 </View>
               </Card>
             ))
