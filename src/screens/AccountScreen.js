@@ -1,20 +1,57 @@
-// AccountScreen.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   Image,
   StyleSheet,
   TouchableOpacity,
-  Button,
+  Alert,
 } from "react-native";
 import { Icon } from "react-native-elements";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 const AccountScreen = ({ navigation }) => {
-  const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logout button pressed");
-    navigation.navigate("Login");
+  const [profileData, setProfileData] = useState({
+    email: "",
+    name: "",
+    token: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const email = await AsyncStorage.getItem("userEmail");
+        const token = await AsyncStorage.getItem("userToken");
+        if (email && token) {
+          setProfileData((prevState) => ({ ...prevState, email, token }));
+          const response = await axios.get(
+            `http://10.0.2.2:8000/api/users/getUser/${email}`
+          );
+          const name = response.data.user.name;
+          console.log("jo:", response.data.user.name);
+          setProfileData((prevState) => ({ ...prevState, name }));
+        }
+      } catch (error) {
+        console.error("Error fetching data from AsyncStorage or API", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("userToken");
+      await AsyncStorage.removeItem("userEmail");
+      console.log("Logout successful");
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Error during logout", error);
+      Alert.alert(
+        "Logout Failed",
+        "An error occurred while logging out. Please try again."
+      );
+    }
   };
 
   return (
@@ -27,7 +64,7 @@ const AccountScreen = ({ navigation }) => {
           style={styles.profileImage}
         />
         <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>Angelica Jackson</Text>
+          <Text style={styles.profileName}>{profileData.name}</Text>
           <Text style={styles.profileRole}>Golden Break</Text>
           <TouchableOpacity>
             <Text style={styles.changeProfileText}>Change profile</Text>
@@ -41,7 +78,6 @@ const AccountScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.reportCard}>
             <View style={styles.cardHeader}>
               <Icon type="entypo" name="ticket" color="#ffffff" />
-
               <Text style={styles.reportTitle}>Voucher</Text>
             </View>
             <Text style={styles.reportDescription}>
@@ -51,7 +87,6 @@ const AccountScreen = ({ navigation }) => {
           <TouchableOpacity style={[styles.reportCard, styles.highlightedCard]}>
             <View style={styles.cardHeader}>
               <Icon type="entypo" name="shopping-cart" color="#ffffff" />
-
               <Text style={styles.reportTitle}>Đơn hàng</Text>
             </View>
             <Text style={styles.reportDescription}>
@@ -61,7 +96,6 @@ const AccountScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.reportCard}>
             <View style={styles.cardHeader}>
               <Icon type="entypo" name="ticket" color="#ffffff" />
-
               <Text style={styles.reportTitle}>Điểm</Text>
             </View>
             <Text style={styles.reportDescription}>
@@ -71,7 +105,6 @@ const AccountScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.reportCard}>
             <View style={styles.cardHeader}>
               <Icon type="entypo" name="heart" color="#ffffff" />
-
               <Text style={styles.reportTitle}>Yêu thích</Text>
             </View>
             <Text style={styles.reportDescription}>
@@ -153,9 +186,9 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
-  // highlightedCard: {
-  //   backgroundColor: "#444",
-  // },
+  highlightedCard: {
+    backgroundColor: "#444",
+  },
   reportTitle: {
     fontSize: 18,
     fontWeight: "bold",

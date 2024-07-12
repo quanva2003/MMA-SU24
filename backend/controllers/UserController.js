@@ -4,36 +4,38 @@ const User = require("../models/user.model");
 const createToken = (userId) => {
   const payload = {
     userId: userId,
-  }
+  };
 
   const token = jwt.sign(payload, "Q$r2K6W8n!jCW%Zk", { expiresIn: "1h" });
   return token;
-}
+};
 
 module.exports = {
-  //endpoint for registration of the user
+  // Endpoint for registration of the user
   RegisterUser: async (req, res) => {
     try {
       const { name, email, password } = req.body;
       const newUser = new User({ name, email, password });
       await newUser.save();
-      res.status(200).json({ message: "User registered successfully!" })
+      res.status(200).json({ message: "User registered successfully!" });
     } catch (error) {
       console.log("Error registering user!", error);
-      res.status(500).json({ message: "Error registering the user!!!" })
+      res.status(500).json({ message: "Error registering the user!!!" });
     }
   },
 
-  //endpoint for logging in of that particular user
+  // Endpoint for logging in of that particular user
   LoginUser: async (req, res) => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return res.status(404).json({ message: "Email and password are required!!" });
+        return res
+          .status(404)
+          .json({ message: "Email and password are required!!" });
       }
 
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ email });
       if (!user) {
         return res.status(404).json({ message: "User not found!" });
       }
@@ -44,10 +46,30 @@ module.exports = {
 
       const token = createToken(user._id);
       res.status(200).json({ token });
-
     } catch (error) {
       console.log("Error in finding user", error);
-      res.status(500).json({ message: "Internal Server Error!!!" })
+      res.status(500).json({ message: "Internal Server Error!!!" });
     }
   },
-}
+
+  // Endpoint for finding a user by email
+  findUserByEmail: async (req, res) => {
+    try {
+      const { email } = req.params;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required!" });
+      }
+
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: "User not found!" });
+      }
+
+      res.status(200).json({ user });
+    } catch (error) {
+      console.log("Error finding user by email", error);
+      res.status(500).json({ message: "Internal Server Error!!!" });
+    }
+  },
+};
