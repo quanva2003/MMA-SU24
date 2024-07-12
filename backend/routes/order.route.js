@@ -14,4 +14,6 @@ router.post("/", OrderController.CreateOrder);
 
 router.delete("/delete/:id", OrderController.DeleteOrder);
 
+router.put("/status/:id", OrderController.UpdateOrderStatus);
+
 module.exports = router;

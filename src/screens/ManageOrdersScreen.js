@@ -33,6 +33,16 @@ const ManageOrdersScreen = () => {
     fetchOrders();
   }, []);
 
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const response = await axios.put(`http://localhost:8000/api/orders/status/${orderId}`, { status: newStatus });
+      console.log("Order status updated:", response.data);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    }
+  };
+  
+
   // Filter orders based on the selected tab
   const today = moment().startOf("day"); // Get today's date at the start of the day
   const filteredOrders = orders.filter((order) => {
@@ -160,11 +170,13 @@ const ManageOrdersScreen = () => {
                     title="Completed"
                     buttonStyle={tw`bg-green-500 px-4 py-2 rounded-md`}
                     titleStyle={tw`text-white`}
+                    onPress={() => updateOrderStatus(order._id, "COMPLETED")}
                   />
                   <Button
                     title="Not Completed"
                     buttonStyle={tw`bg-red-500 px-4 py-2 rounded-md`}
                     titleStyle={tw`text-white`}
+                    onPress={() => updateOrderStatus(order._id, "CANCELED")}
                   />
                 </View>
               </Card>
