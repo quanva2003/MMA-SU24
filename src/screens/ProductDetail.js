@@ -59,6 +59,7 @@ const ProductDetail = ({ route }) => {
   };
 
   const handleAddToCart = async () => {
+    navigate.navigate("Checkout", { products: [] });
     try {
       const email = await AsyncStorage.getItem("userEmail");
       const token = await AsyncStorage.getItem("userToken");
@@ -138,7 +139,7 @@ const ProductDetail = ({ route }) => {
                   justifyContent: "flex-end",
                 }}
               >
-                {product.image && product.image.length > 0 && (
+                {product.image && product.image.length > 0 ? (
                   <View
                     style={tw`flex flex-row items-start justify-center gap-4 p-2
                   ${product.image.length === 0 && "hidden"}`}
@@ -163,7 +164,7 @@ const ProductDetail = ({ route }) => {
                       );
                     })}
                   </View>
-                )}
+                ) : null}
               </ImageBackground>
             </View>
 

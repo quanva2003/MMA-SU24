@@ -8,4 +8,6 @@ router.post("/login", UserController.LoginUser);
 
 router.get("/getUser/:email", UserController.findUserByEmail);
 
+router.patch("/:email", UserController.updateUserByEmail);
+
 module.exports = router;

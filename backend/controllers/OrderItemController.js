@@ -7,7 +7,7 @@ module.exports = {
       res.status(200).json(orderItem);
     } catch (error) {
       console.log("Error get all order items!", error);
-      res.status(500).json({ message: "Error get order items!!!" })
+      res.status(500).json({ message: "Error get order items!!!" });
     }
   },
 
@@ -18,14 +18,14 @@ module.exports = {
       res.status(200).json(orderItem);
     } catch (error) {
       console.log("Error get order items!", error);
-      res.status(500).json({ message: "Error get order items!!!" })
+      res.status(500).json({ message: "Error get order items!!!" });
     }
   },
 
   AddOrderItem: async (req, res) => {
-    const { product, orderId } = req.body;
+    const { product, order } = req.body;
 
-    if (!product || !orderId) {
+    if (!product || !order) {
       console.log("Invalid data passed into request");
       return res.status(400).json({ message: "Invalid data" });
     }
@@ -35,14 +35,16 @@ module.exports = {
       res.status(200).json(orderItem);
     } catch (error) {
       console.log("Error add order items!", error);
-      res.status(500).json({ message: "Error add order items!!!" })
+      res.status(500).json({ message: "Error add order items!!!" });
     }
   },
 
   UpdateOrderItemStatus: async (req, res) => {
     try {
       const { id: orderItemId } = req.params;
-      const orderItem = await OrderItem.findByIdAndUpdate(orderItemId, { status: req.body });
+      const orderItem = await OrderItem.findByIdAndUpdate(orderItemId, {
+        status: req.body,
+      });
 
       if (!orderItem) {
         res.status(404).json({ message: "Order Item not found" });
@@ -51,7 +53,7 @@ module.exports = {
       res.status(200).json(orderItem);
     } catch (error) {
       console.log("Error update order items!", error);
-      res.status(500).json({ message: "Error update order items!!!" })
+      res.status(500).json({ message: "Error update order items!!!" });
     }
   },
 
@@ -67,7 +69,7 @@ module.exports = {
       res.status(200).json({ message: "Order Item deleted" });
     } catch (error) {
       console.log("Error delete order items!", error);
-      res.status(500).json({ message: "Error delete order items!!!" })
+      res.status(500).json({ message: "Error delete order items!!!" });
     }
-  }
-}
+  },
+};

@@ -10,7 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@ant-design/react-native": "^5.1.3",
+    "@ant-design/react-native": "^4.2.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.17",
@@ -20,6 +20,7 @@
     "crypto-js": "^4.2.0",
     "expo": "~51.0.2",
     "expo-status-bar": "~1.12.1",
+    "jwt-decode": "^4.0.0",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "^0.74.3",
@@ -34,8 +35,8 @@
     "react-native-step-indicator": "^1.0.3",
     "react-native-vector-icons": "^10.1.0",
     "twrnc": "^4.2.0",
-    "zalo": "file:./modules\\PayZaloBridge",
-    "typescript": "~5.3.3"
+    "typescript": "~5.3.3",
+    "zalo": "file:./modules\\PayZaloBridge"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
