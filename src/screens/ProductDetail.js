@@ -9,64 +9,92 @@ import {
   ImageBackground,
   Alert,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import { Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
 import CurrencySplitter from "../assistants/currencySpliter";
-
-//Khi nào đổi bên trang home truyền qua đúng data thì sửa mấy cái "temp" thành "product" là được
-const temp = {
-  _id: "668e2baa1d9ba0c851a29441",
-  productName:
-    "Anastasia Lab Diamond Halo Engagement Ring 18K White Gold 1.30ct F/VS1",
-  diamondId: {
-    _id: "668e2ac450d3ae9df2b1806b",
-    type: "Lab Diamond",
-  },
-  shellId: {
-    _id: "668e2a1f50d3ae9df2b18069",
-    shellName: "Halo",
-    category: "ring",
-    size: [7, 8, 9, 10],
-    createdAt: "2024-07-10T06:28:47.501Z",
-    updatedAt: "2024-07-10T06:28:47.501Z",
-    __v: 0,
-  },
-  materialId: {
-    _id: "668e29c450d3ae9df2b18067",
-    materialName: "White Gold",
-    createdAt: "2024-07-10T06:27:16.519Z",
-    updatedAt: "2024-07-10T06:27:16.519Z",
-    __v: 0,
-  },
-  quantity: 300,
-  price: 35650000,
-  image: [
-    "https://thediamondstore.imgix.net/productimages/LBSR57-D50w-2.jpg",
-    "https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp",
-  ],
-  description:
-    "To create breathtaking brilliance, this exquisite engagement ring brings together a stunning lab grown solitaire and a double halo of diamonds. Drawing the eye to the solitaire is a split shank band, which provides more surface area for dazzling accent diamonds. The handcrafted 18K white gold setting looks and feels luxurious on the hand.",
-  createdAt: "2024-07-10T06:35:22.888Z",
-  updatedAt: "2024-07-10T06:35:22.888Z",
-  __v: 0,
-};
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 const ProductDetail = ({ route }) => {
-  const product = route.params;
-  const [isInCart, toggleIsInCart] = useState(false);
-  const [currentImage, setCurrentImage] = useState(temp.image[0]);
+  const { product } = route.params;
+  const [isInCart, setIsInCart] = useState(false);
+  const [currentImage, setCurrentImage] = useState(product.image?.[0] || null);
   const [currentSize, setCurrentSize] = useState(0);
-
   const navigate = useNavigation();
-  const productData = product.product;
-  console.log("Product: ", productData);
 
-  const handleAddToCart = () => {
-    console.log("Add to cart");
-    toggleIsInCart(!isInCart);
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
+
+  const fetchCartItems = async () => {
+    try {
+      const email = await AsyncStorage.getItem("userEmail");
+      const token = await AsyncStorage.getItem("userToken");
+
+      if (!email || !token) {
+        Alert.alert("Please log in to view your cart.");
+        return;
+      }
+
+      const userIdResponse = await axios.get(
+        `http://10.0.2.2:8000/api/users/getUser/${email}`
+      );
+      const userId = userIdResponse.data.user._id;
+
+      const cartResponse = await axios.get(
+        `http://10.0.2.2:8000/api/carts/user/${userId}`
+      );
+      const cartItems = cartResponse.data;
+
+      const isProductInCart = cartItems.some(
+        (item) => item.productId === product._id
+      );
+      setIsInCart(isProductInCart);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+      Alert.alert("Error", "Failed to fetch cart items. Please try again.");
+    }
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      const email = await AsyncStorage.getItem("userEmail");
+      const token = await AsyncStorage.getItem("userToken");
+
+      if (!email || !token) {
+        Alert.alert("Please log in to add items to cart.");
+        return;
+      }
+
+      const userIdResponse = await axios.get(
+        `http://10.0.2.2:8000/api/users/getUser/${email}`
+      );
+      const userId = userIdResponse.data.user._id;
+
+      const cartItemData = {
+        productId: product._id,
+        user: userId,
+        quantity: 1,
+        size: currentSize !== 0 ? currentSize : null,
+      };
+
+      const response = await axios.post(
+        `http://10.0.2.2:8000/api/carts/`,
+        cartItemData
+      );
+
+      if (response.status === 200) {
+        setIsInCart(true);
+        Alert.alert("Item added to cart successfully!");
+      } else {
+        Alert.alert("Failed to add item to cart. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      Alert.alert("Failed to add item to cart. Please try again later.");
+    }
   };
 
   const handleSelectSize = (size) => {
@@ -110,36 +138,38 @@ const ProductDetail = ({ route }) => {
                   justifyContent: "flex-end",
                 }}
               >
-                <View
-                  style={tw`flex flex-row items-start justify-center gap-4 p-2
-                  ${temp.image.length === 0 && "hidden"}`}
-                >
-                  {temp.image.map((image, index) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => setCurrentImage(image)}
-                        key={index}
-                        style={tw`flex rounded-full overflow-hidden p-1 bg-gray-500`}
-                      >
-                        <Image
-                          source={{ uri: image }}
-                          style={{
-                            width: 50,
-                            height: 50,
-                            opacity: currentImage === image ? 1 : 0.3,
-                            borderRadius: 50,
-                          }}
-                        />
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
+                {product.image && product.image.length > 0 && (
+                  <View
+                    style={tw`flex flex-row items-start justify-center gap-4 p-2
+                  ${product.image.length === 0 && "hidden"}`}
+                  >
+                    {product.image.map((image, index) => {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => setCurrentImage(image)}
+                          key={index}
+                          style={tw`flex rounded-full overflow-hidden p-1 bg-gray-500`}
+                        >
+                          <Image
+                            source={{ uri: image }}
+                            style={{
+                              width: 50,
+                              height: 50,
+                              opacity: currentImage === image ? 1 : 0.3,
+                              borderRadius: 50,
+                            }}
+                          />
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                )}
               </ImageBackground>
             </View>
 
             <View style={tw`w-full flex p-2`}>
               <Text style={tw`text-white font-black text-[1.5rem]`}>
-                {temp.productName}
+                {product.productName}
               </Text>
               <View style={tw`flex-1 items-start gap-2 py-4`}>
                 <Text style={tw`text-white opacity-50`}>
@@ -154,7 +184,7 @@ const ProductDetail = ({ route }) => {
                       color="#fff"
                     />
                     <Text style={tw`text-slate-200 text-sm font-light`}>
-                      Type: {temp.diamondId.type}
+                      Type: {product.diamondId.type}
                     </Text>
                   </View>
                   <View style={tw`flex-row items-center gap-2`}>
@@ -165,9 +195,9 @@ const ProductDetail = ({ route }) => {
                       color="#fff"
                     />
                     <Text style={tw`text-slate-200 text-sm font-light`}>
-                      {temp.shellId.category.charAt(0).toUpperCase() +
-                        temp.shellId.category.substring(1)}{" "}
-                      brand: {temp.shellId.shellName}
+                      {product.shellId.category.charAt(0).toUpperCase() +
+                        product.shellId.category.substring(1)}{" "}
+                      brand: {product.shellId.shellName}
                     </Text>
                   </View>
                   <View style={tw`flex-row items-center gap-2`}>
@@ -178,9 +208,9 @@ const ProductDetail = ({ route }) => {
                       color="#fff"
                     />
                     <Text style={tw`text-slate-200 text-sm font-light`}>
-                      {temp.shellId.category.charAt(0).toUpperCase() +
-                        temp.shellId.category.substring(1)}{" "}
-                      material: {temp.materialId.materialName}
+                      {product.shellId.category.charAt(0).toUpperCase() +
+                        product.shellId.category.substring(1)}{" "}
+                      material: {product.materialId.materialName}
                     </Text>
                   </View>
                 </View>
@@ -190,10 +220,11 @@ const ProductDetail = ({ route }) => {
                 <View style={tw`flex-row items-center gap-4`}>
                   <Text style={tw`text-white opacity-50`}>Available size:</Text>
                   <View style={tw`flex-row items-center gap-2`}>
-                    {temp.shellId.size.map((size) => {
+                    {product.shellId.size.map((size, index) => {
                       return (
                         <TouchableOpacity
                           onPress={() => handleSelectSize(size)}
+                          key={index}
                           style={tw`min-w-8 min-h-8 flex items-center justify-center rounded-xl bg-white ${
                             currentSize !== size &&
                             "bg-black border border-white"
@@ -213,18 +244,12 @@ const ProductDetail = ({ route }) => {
                   We can help in size selecting unless you do not know the exact
                   one.
                 </Text>
-                <Text style={tw`text-red-500 italic text-xs px-8`}>
-                  Nếu nó chọn size thì cho bỏ qua bước gửi request cho sale, còn
-                  không chọn thì như cũ. Bước này không có trong main flow nhưng
-                  dù sao cũng ngắn gọn, cho UI nó phong phú tí. Đọc rồi thì xóa
-                  dòng đỏ đỏ này.
-                </Text>
               </View>
 
               <View style={tw`flex-1 items-start gap-2 py-4`}>
                 <Text style={tw`text-white opacity-50`}>Description</Text>
                 <Text style={tw`text-slate-200 text-sm font-light`}>
-                  {temp.description}
+                  {product.description}
                 </Text>
               </View>
 
@@ -238,11 +263,12 @@ const ProductDetail = ({ route }) => {
             <View style={tw`flex gap-1`}>
               <Text style={tw`text-xs text-white`}>Price</Text>
               <Text style={tw`text-lg text-white font-semibold`}>
-                $ {CurrencySplitter(Math.round(temp.price))}
+                $ {CurrencySplitter(Math.round(product.price))}
               </Text>
             </View>
             <TouchableOpacity
               onPress={handleAddToCart}
+              disabled={isInCart}
               style={tw`grow ml-4 px-2 py-3 rounded-xl flex-row items-center justify-center gap-2 ${
                 isInCart ? "bg-green-600" : "bg-white"
               }`}

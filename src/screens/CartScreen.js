@@ -4,105 +4,168 @@ import {
   View,
   Text,
   Image,
-  Button,
   StyleSheet,
   FlatList,
   TouchableOpacity,
   Modal,
   Pressable,
+  Alert,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { List, Stepper } from "@ant-design/react-native";
+import { Stepper } from "@ant-design/react-native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import tw from "twrnc";
-const cartItems = [
-  {
-    id: "1",
-    name: "White ring 10K synthentic STYLE",
-    size: "3.9",
-    price: "200",
-    image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/176/sp-gnztztw000012-nhan-vang-trang-10k-dinh-da-sythertic-style-by-pnj-unisex-1.png",
-    quantity: 1,
-  },
-  {
-    id: "2",
-    name: "White ring 20K synthentic STYLE",
-    size: "4.2",
-    price: "300",
-    image:
-      "https://cdn.pnj.io/images/thumbnails/300/300/detailed/176/sp-gnztztw000012-nhan-vang-trang-10k-dinh-da-sythertic-style-by-pnj-unisex-1.png",
-    quantity: 1,
-  },
-];
+import { Icon } from "react-native-elements";
 
 const CartScreen = () => {
   const navigation = useNavigation();
+  const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+
   useEffect(() => {
-    calculateTotalPrice();
-  }, []);
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchCartItems();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+  const fetchCartItems = async () => {
+    try {
+      const email = await AsyncStorage.getItem("userEmail");
+      const token = await AsyncStorage.getItem("userToken");
+
+      if (!email || !token) {
+        Alert.alert("Please log in to view your cart.");
+        return;
+      }
+
+      const userIdResponse = await axios.get(
+        `http://10.0.2.2:8000/api/users/getUser/${email}`
+      );
+      const userId = userIdResponse.data.user._id;
+
+      const cartResponse = await axios.get(
+        `http://10.0.2.2:8000/api/carts/user/${userId}`
+      );
+      const cartItems = cartResponse.data;
+      console.log(cartItems);
+      const productDetailsPromises = cartItems.map(async (item) => {
+        const productResponse = await axios.get(
+          `http://10.0.2.2:8000/api/products/${item.productId}`
+        );
+        return {
+          ...item,
+          product: productResponse.data,
+        };
+      });
+
+      const cartItemsWithProductDetails = await Promise.all(
+        productDetailsPromises
+      );
+      setCartItems(cartItemsWithProductDetails);
+      console.log("haha", cartItemsWithProductDetails);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+      Alert.alert("Error", "Failed to fetch cart items. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    calculateTotalPrice(cartItems);
+  }, [cartItems]);
 
   const handleQuantityChange = (value, id) => {
     const updatedCartItems = cartItems.map((item) =>
-      item.id === id ? { ...item, quantity: value } : item
+      item._id === id ? { ...item, quantity: value } : item
     );
-    calculateTotalPrice(updatedCartItems);
+    setCartItems(updatedCartItems);
   };
 
-  const calculateTotalPrice = (items = cartItems) => {
+  const calculateTotalPrice = (items) => {
     const total = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + item.product.price * item.quantity,
       0
     );
     setTotalPrice(total);
   };
+
+  const deleteCartItem = async (id) => {
+    try {
+      await axios.delete(`http://10.0.2.2:8000/api/carts/delete/${id}`);
+      setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
+      fetchCartItems();
+    } catch (error) {
+      console.error("Error deleting cart item:", error);
+      Alert.alert("Error", "Failed to delete cart item. Please try again.");
+    }
+  };
+
+  const truncateText = (text, wordLimit) => {
+    if (!text) return "";
+    const words = text.split(" ");
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(" ") + "...";
+    }
+    return text;
+  };
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
   return (
     <View style={styles.container}>
-      {/* <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Icon name="arrow-back" size={24} color="#fff" />
-      </TouchableOpacity> */}
       <Text style={styles.header}>Cart</Text>
 
-      <FlatList
-        data={cartItems}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.cartItem}>
-            <Image source={{ uri: item.image }} style={styles.itemImage} />
-            <View style={styles.itemDetails}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemSize}>Size: {item.size}</Text>
-              <Text style={styles.itemPrice}>Price: {item.price}$</Text>
-              <View style={styles.quantityContainer}>
-                {/* <Icon name="remove" size={24} color="#fff" />
-                <Text style={styles.quantityText}>1</Text>
-                <Icon name="add" size={24} color="#fff" /> */}
-                <Stepper
-                  max={10}
-                  min={1}
-                  defaultValue={item.quantity}
-                  onChange={(value) => handleQuantityChange(value, item.id)}
-                  inputStyle={tw`text-white`}
-                />
+      {cartItems.length === 0 ? (
+        <Text style={styles.emptyCartText}>No products added to cart.</Text>
+      ) : (
+        <FlatList
+          data={cartItems}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <View style={styles.cartItem}>
+              <Image
+                source={{ uri: item.product.image[0] }}
+                style={styles.itemImage}
+              />
+              <View style={styles.itemDetails}>
+                <Text style={styles.itemName}>
+                  {truncateText(item.product.productName, 4)}
+                </Text>
+                <Text style={styles.itemSize}>Size: {item.size}</Text>
+                <Text style={styles.itemPrice}>
+                  Price: {item.product.price}$
+                </Text>
+                <View style={styles.quantityContainer}>
+                  <Stepper
+                    max={10}
+                    min={1}
+                    defaultValue={item.quantity}
+                    onChange={(value) => handleQuantityChange(value, item._id)}
+                    inputStyle={tw`text-white`}
+                  />
+                </View>
               </View>
+              <TouchableOpacity onPress={() => deleteCartItem(item._id)}>
+                <Icon type="antdesign" name="delete" color={"red"} size={20} />
+              </TouchableOpacity>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
 
-      <View style={styles.footer}>
-        <Text style={styles.totalText}>Total: {totalPrice}$</Text>
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={styles.buyBtn}
-        >
-          <Text style={tw`text-white font-bold text-lg`}>BUY IT</Text>
-        </TouchableOpacity>
-      </View>
+      {cartItems.length > 0 && (
+        <View style={styles.footer}>
+          <Text style={styles.totalText}>Total: {totalPrice}$</Text>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.buyBtn}
+          >
+            <Text style={tw`text-white font-bold text-lg`}>BUY IT</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <Modal
         animationType="fade"
         transparent={true}
@@ -115,7 +178,7 @@ const CartScreen = () => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
-              Are u sure your item before choose size?
+              Are you sure you want to proceed without choosing size?
             </Text>
             <View style={styles.modalFooter}>
               <Pressable
@@ -131,7 +194,7 @@ const CartScreen = () => {
                   setModalVisible(!modalVisible);
                 }}
               >
-                <Text style={styles.textStyle}>Yes :)))</Text>
+                <Text style={styles.textStyle}>Yes</Text>
               </Pressable>
             </View>
           </View>
@@ -160,6 +223,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#333",
     padding: 10,
     borderRadius: 8,
+    alignItems: "center",
   },
   itemImage: {
     width: 80,
@@ -246,7 +310,6 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
   },
-
   btnClose: {
     backgroundColor: "#999999",
   },
@@ -255,17 +318,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  btnConfirm: {
+    backgroundColor: "#2196F3",
+  },
   modalText: {
     marginBottom: 15,
     textAlign: "center",
   },
   modalFooter: {
-    display: "flex",
     flexDirection: "row",
-    gap: 10,
+    justifyContent: "space-around",
+    width: "100%",
+    marginTop: 20,
   },
-  btnConfirm: {
-    backgroundColor: "#212121",
+  emptyCartText: {
+    color: "#fff",
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 

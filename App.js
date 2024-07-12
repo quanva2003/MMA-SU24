@@ -20,6 +20,9 @@ import SaleScreen from "./src/screens/SaleScreen";
 import CheckOrderScreen from "./src/screens/CheckOrderScreen";
 import CustomerPointsScreen from "./src/screens/CustomerPointsScreen";
 import ChooseNi from "./src/screens/ChooseNi";
+import AllProducts from "./src/screens/AllProducts";
+import SearchResult from "./src/screens/SearchResult";
+import ShellScreen from "./src/screens/ShellScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -147,6 +150,9 @@ function App() {
           <Stack.Screen name="Checkout" component={CheckoutScreen} />
           <Stack.Screen name="CheckOrder" component={CheckOrderScreen} />
           <Stack.Screen name="ChooseNi" component={ChooseNi} />
+          <Stack.Screen name="AllProducts" component={AllProducts} />
+          <Stack.Screen name="SearchResult" component={SearchResult} />
+          <Stack.Screen name="Shell" component={ShellScreen} />
           <Stack.Screen
             name="CustomerPoints"
             component={CustomerPointsScreen}

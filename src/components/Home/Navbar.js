@@ -1,5 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   TextInput,
@@ -8,13 +7,18 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Icon } from "react-native-elements";
+import { useNavigation } from "@react-navigation/native";
 
 const Navbar = () => {
   const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const goToShoppingCart = () => {
-    navigation.navigate("CartScreen");
+  const handleSearch = () => {
+    // Navigate to SearchResult screen with searchQuery
+    navigation.navigate("SearchResult", { query: searchQuery });
+    setSearchQuery(""); // Clear search input after navigation
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -30,14 +34,19 @@ const Navbar = () => {
             style={styles.searchBox}
             placeholder="Search..."
             placeholderTextColor="#FFFFFF"
+            value={searchQuery}
+            onChangeText={(text) => setSearchQuery(text)}
+            onSubmitEditing={handleSearch} // Called when Enter is pressed
           />
         </View>
-        {/* <TouchableOpacity
+        {/* 
+        <TouchableOpacity
           style={styles.cartContainer}
           onPress={() => navigation.navigate("CartScreen")}
         >
           <Icon type="MaterialIcons" name="shopping-cart" color="#ffffff" />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
+        */}
       </View>
     </View>
   );

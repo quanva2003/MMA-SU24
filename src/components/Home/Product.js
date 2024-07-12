@@ -6,11 +6,22 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
+  SafeAreaView,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import tw from "twrnc";
+
+const truncateText = (text, wordLimit) => {
+  if (!text) return ""; // Return an empty string if text is undefined
+  const words = text.split(" ");
+  if (words.length > wordLimit) {
+    return words.slice(0, wordLimit).join(" ") + "...";
+  }
+  return text;
+};
 
 const ProductCard = ({ product, navigate }) => (
   <TouchableOpacity
@@ -18,9 +29,10 @@ const ProductCard = ({ product, navigate }) => (
     style={styles.productCard}
   >
     <Image source={{ uri: product.image[0] }} style={styles.productImage} />
-    <Text style={styles.productDescription}>{product.category}</Text>
-    <Text style={styles.productPrice}>{product.price}$</Text>
-    <Text style={tw`text-white`}>{product.quantitySold} sold</Text>
+    <Text style={styles.productDescription}>
+      {truncateText(product.productName, 4)}
+    </Text>
+    <Text style={styles.productPrice}>Price: {product.price}$</Text>
   </TouchableOpacity>
 );
 
@@ -31,33 +43,37 @@ const NewProduct = () => {
 
   useEffect(() => {
     axios
-      .get("https://6686443583c983911b01668f.mockapi.io/product")
+      .get("http://10.0.2.2:8000/api/products")
       .then((response) => {
-        console.log(response.data);
-        setProductData(response.data);
-        setLoading(false); // Set loading to false when data is fetched
+        const sortedData = response.data.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+        setProductData(sortedData.slice(0, 6));
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
-        setLoading(false); // Set loading to false on error as well
+        setLoading(false);
       });
   }, []);
 
   if (loading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#fff" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={tw`flex-row justify-between items-center`}>
-        <Text style={tw`text-white text-xl font-bold ml-2 mb-2`}>
-          New Product
-        </Text>
-        <TouchableOpacity style={tw`flex-row items-center`}>
+        <Text style={tw`text-white text-xl font-bold ml-2 mb-2`}>Products</Text>
+        <TouchableOpacity
+          onPress={() => navigate.navigate("AllProducts")}
+          style={tw`flex-row items-center`}
+        >
           <Text style={tw`text-white text-base font-light ml-2 mb-2`}>
             See more
           </Text>
@@ -75,11 +91,11 @@ const NewProduct = () => {
         renderItem={({ item }) => (
           <ProductCard product={item} navigate={navigate} />
         )}
-        keyExtractor={(item) => item.id}
-        horizontal={true} // Enable horizontal scrolling
+        keyExtractor={(item) => item._id}
+        numColumns={2}
         contentContainerStyle={styles.productList}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -97,47 +113,25 @@ const styles = StyleSheet.create({
   loadingText: {
     color: "#fff",
     fontSize: 18,
-  },
-  topHeader: {
-    color: "#ffffff",
-    fontSize: 20,
-    marginBottom: 20,
-    paddingLeft: 20,
-  },
-  categoryContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-  },
-  categoryButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    backgroundColor: "#333",
-  },
-  selectedCategoryButton: {
-    backgroundColor: "#555",
-  },
-  categoryText: {
-    color: "#ccc",
-  },
-  selectedCategoryText: {
-    color: "#fff",
+    marginTop: 10,
   },
   productList: {
-    alignItems: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
   },
   productCard: {
-    width: 150,
+    width: 180,
     backgroundColor: "#1c1c1c",
     borderRadius: 10,
     padding: 10,
     margin: 5,
     alignItems: "center",
+    marginLeft: 10,
+    // marginBottom: 10,
   },
   productImage: {
-    width: "100%",
-    height: 150,
+    width: 163,
+    height: 207,
     borderRadius: 10,
     marginBottom: 10,
   },

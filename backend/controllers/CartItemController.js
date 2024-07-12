@@ -8,7 +8,7 @@ module.exports = {
       res.status(200).json(cartItem);
     } catch (error) {
       console.log("Error get all cartItem!", error);
-      res.status(500).json({ message: "Error get all cartItem!!!" })
+      res.status(500).json({ message: "Error get all cartItem!!!" });
     }
   },
 
@@ -25,26 +25,27 @@ module.exports = {
       res.status(200).json(cartItem);
     } catch (error) {
       console.log("Error get cartItem by id!", error);
-      res.status(500).json({ message: "Error get cartItem!!!" })
+      res.status(500).json({ message: "Error get cartItem!!!" });
     }
   },
 
   GetCartItemByUser: async (req, res) => {
     try {
       const { id: userId } = req.params;
-      const cartItem = await CartItem.findById({ user: userId });
+      const cartItems = await CartItem.find({ user: userId });
 
-      if (!cartItem) {
-        return res.status(404).json({ message: "cartItem not found" });
+      if (!cartItems.length) {
+        return res
+          .status(404)
+          .json({ message: "No cart items found for this user" });
       }
 
-      res.status(200).json(cartItem);
+      res.status(200).json(cartItems);
     } catch (error) {
-      console.log("Error get cartItem by user!", error);
-      res.status(500).json({ message: "Error get cartItem!!!" })
+      console.error("Error getting cart items by user:", error);
+      res.status(500).json({ message: "Error get cart items!!!" });
     }
   },
-
   //endpoint for add cart item
   AddCartItem: async (req, res) => {
     const newCart = new CartItem(req.body);
@@ -53,21 +54,23 @@ module.exports = {
       res.status(200).json(cartItem);
     } catch (error) {
       console.log("Error add cartItem!", error);
-      res.status(500).json({ message: "Error add cartItem!!!" })
+      res.status(500).json({ message: "Error add cartItem!!!" });
     }
   },
 
   UpdateCartItem: async (req, res) => {
     const { id: cartItemId } = req.params;
     try {
-      const cartItem = await CartItem.findByIdAndUpdate(cartItemId, { quantity: req.body })
+      const cartItem = await CartItem.findByIdAndUpdate(cartItemId, {
+        quantity: req.body,
+      });
       if (!cartItem) {
         return res.status(404).json({ message: "cartItem not found" });
       }
       res.status(200).json(cartItem);
     } catch (error) {
       console.log("Error update cartItem!", error);
-      res.status(500).json({ message: "Error update cartItem!!!" })
+      res.status(500).json({ message: "Error update cartItem!!!" });
     }
   },
 
@@ -83,7 +86,7 @@ module.exports = {
       res.status(200).json(cartItem);
     } catch (error) {
       console.log("Error delete cartItem!", error);
-      res.status(500).json({ message: "Error delete cartItem!!!" })
+      res.status(500).json({ message: "Error delete cartItem!!!" });
     }
-  }
-}
+  },
+};
