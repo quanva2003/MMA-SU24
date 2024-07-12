@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, FlatList, Image, Button, TouchableOpacity, TextInput, StyleSheet, Dimensions } from 'react-native';
 
@@ -74,7 +75,7 @@ function SaleScreen() {
             <Image source={{ uri: item.image }} style={styles.productImage} />
             <Text style={styles.productDescription}>{item.type}</Text>
             <Text style={styles.productDescription}>Carat: {item.carat}</Text>
-            <Text style={styles.productDescription}>{item.user}</Text>
+            <Text style={styles.productDescription}>Buyer: {item.user}</Text>
             <Text style={styles.productDescription}>Size: {item.size}</Text>
             <Text style={styles.productDescription}>Price: ${item.price}</Text>
             <Text style={[styles.productDescription, item.status === 'Available' ? styles.available : styles.sold]}>
