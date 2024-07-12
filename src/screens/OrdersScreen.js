@@ -91,23 +91,20 @@ export default function OrdersScreen() {
         <View style={tw`w-full flex-row items-center px-4 pt-4`}>
           <TouchableOpacity
             onPress={() => setTab("upcoming")}
-            style={tw`grow flex items-center py-2 border-b-2 ${
-              tab === "upcoming" ? "border-white" : "border-stone-800"
-            }`}
+            style={tw`grow flex items-center py-2 border-b-2 ${tab === "upcoming" ? "border-white" : "border-stone-800"
+              }`}
           >
             <Text
-              style={tw`${
-                tab === "upcoming" ? "text-white" : "text-stone-600"
-              }`}
+              style={tw`${tab === "upcoming" ? "text-white" : "text-stone-600"
+                }`}
             >
               Upcoming orders
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setTab("past")}
-            style={tw`grow flex items-center py-2 border-b-2 ${
-              tab === "past" ? "border-white" : "border-stone-800"
-            }`}
+            style={tw`grow flex items-center py-2 border-b-2 ${tab === "past" ? "border-white" : "border-stone-800"
+              }`}
           >
             <Text
               style={tw`${tab === "past" ? "text-white" : "text-stone-600"}`}
