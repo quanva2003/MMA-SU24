@@ -4,6 +4,8 @@ const OrderItemController = require("../controllers/OrderItemController");
 
 router.get("/", OrderItemController.GetAllOrderItems);
 
+router.get("/order/:id", OrderItemController.GetOrderItemByOrder);
+
 router.get("/:id", OrderItemController.GetOrderItemById);
 
 router.post("/", OrderItemController.AddOrderItem);

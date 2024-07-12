@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -11,10 +11,13 @@ import {
 } from "react-native";
 import { Icon } from "react-native-elements";
 import tw from "twrnc";
+import SingleOrder from "../components/Orders/SingleOrder";
 
 export default function OrdersScreen() {
   const [tab, setTab] = useState("upcoming");
   const [user, setUser] = useState(null);
+  const [orderList, setOrderList] = useState([]);
+  const [currentList, setCurrentList] = useState([]);
   const navigate = useNavigation();
 
   const fetchOrders = async () => {
@@ -23,12 +26,45 @@ export default function OrdersScreen() {
       setUser(currentUser);
 
       await axios
-        .get(`http://localhost:8000/api/orders/user/${currentUser._id}`)
+        .get(`http://10.0.2.2:8000/api/orders/user/${currentUser._id}`)
         .then((res) => {
           console.log("Orders: ", res.data);
-        });
+          setOrderList(res.data);
+          setCurrentList(
+            res.data.filter(
+              (item) =>
+                item.status === "PENDING" || item.status === "IN DELIVERY"
+            )
+          );
+        })
+        .catch((err) => console.log(err));
     });
   };
+
+  const filterOrderList = () => {
+    if (tab === "upcoming") {
+      setCurrentList(
+        orderList.filter(
+          (item) => item.status === "PENDING" || item.status === "IN DELIVERY"
+        )
+      );
+    } else if (tab === "past") {
+      setCurrentList(
+        orderList.filter(
+          (item) => item.status === "COMPLETED" || item.status === "CANCELED"
+        )
+      );
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    filterOrderList();
+  }, [tab]);
+
   return (
     <View style={tw`flex-1`}>
       <SafeAreaView
@@ -79,6 +115,20 @@ export default function OrdersScreen() {
               Past Orders
             </Text>
           </TouchableOpacity>
+        </View>
+
+        <View style={tw`w-full flex-1 py-4 gap-4`}>
+          {currentList.length === 0 ? (
+            <View style={tw`mt-16 w-full flex items-center`}>
+              <Text style={tw`text-white font-light`}>
+                There is no order here!
+              </Text>
+            </View>
+          ) : (
+            currentList.map((order) => {
+              return <SingleOrder key={order._id} order={order} />;
+            })
+          )}
         </View>
       </ScrollView>
     </View>
