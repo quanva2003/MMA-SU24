@@ -25,6 +25,7 @@ import ChooseNi from "./src/screens/ChooseNi";
 import AllProducts from "./src/screens/AllProducts";
 import SearchResult from "./src/screens/SearchResult";
 import ShellScreen from "./src/screens/ShellScreen";
+import ManageOrdersScreen from "./src/screens/ManageOrdersScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -134,6 +135,20 @@ const MainTabs = () => {
           ),
         }}
       />
+      <Tab.Screen
+        name="Order"
+        component={ManageOrdersScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              type="antdesign"
+              name="book"
+              color={color}
+              size={focused ? 30 : 24} // Increase size if focused
+            />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };
@@ -157,6 +172,7 @@ function App() {
           <Stack.Screen name="AllProducts" component={AllProducts} />
           <Stack.Screen name="SearchResult" component={SearchResult} />
           <Stack.Screen name="Shell" component={ShellScreen} />
+          <Stack.Screen name="ManageOrder" component={ManageOrdersScreen} />
           <Stack.Screen
             name="CustomerPoints"
             component={CustomerPointsScreen}

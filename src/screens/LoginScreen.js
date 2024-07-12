@@ -15,27 +15,31 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    try {
-      const res = await axios.post("http://10.0.2.2:8000/api/users/login", {
-        email: email,
-        password: password,
-      });
-      console.log("Success", res.data);
-      const decoded = jwtDecode(res.data.token).user;
-      console.log("Decoded: ", decoded);
-      await AsyncStorage.setItem("user", JSON.stringify(decoded));
-      await AsyncStorage.setItem("userToken", res.data.token);
-      await AsyncStorage.setItem("userEmail", email);
-      navigation.navigate("Main");
-    } catch (err) {
-      console.error("Error", err);
-      Alert.alert(
-        "Login Failed",
-        "Please check your credentials and try again."
-      );
-    }
-  };
+  // const handleLogin = async () => {
+  //   try {
+  //     const res = await axios.post("http://10.0.2.2:8000/api/users/login", {
+  //       email: email,
+  //       password: password,
+  //     });
+  //     console.log("Success", res.data);
+  //     const decoded = jwtDecode(res.data.token).user;
+  //     console.log("Decoded: ", decoded);
+  //     await AsyncStorage.setItem("user", JSON.stringify(decoded));
+  //     await AsyncStorage.setItem("userToken", res.data.token);
+  //     await AsyncStorage.setItem("userEmail", email);
+  //     navigation.navigate("Main");
+  //   } catch (err) {
+  //     console.error("Error", err);
+  //     Alert.alert(
+  //       "Login Failed",
+  //       "Please check your credentials and try again."
+  //     );
+  //   }
+  // };
+
+  const handleLogin = () => {
+    navigation.navigate("Main");
+  }
 
   const handleSignUp = () => {
     navigation.navigate("SignUp");
