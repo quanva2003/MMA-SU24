@@ -11,18 +11,139 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import { Button, Icon } from "react-native-elements";
+import { Icon } from "react-native-elements";
 import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import CurrencySplitter from "../assistants/currencySpliter";
 import Loading from "../components/Loading/Loading";
 import RNPickerSelect from "react-native-picker-select";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { generateNumericCode } from "../assistants/generators";
 
-export default function CheckoutScreen() {
+const tempItems = [
+  {
+    _id: "66904ffdccd6f078842d0d87",
+    productId: {
+      _id: "668e8e861cabf69dfeb62e13",
+      productName:
+        "Aurora Yellow Lab Diamond Emerald Cut And Trillion 1.70ct Ring In 18K Yellow Gold - Elara Collection",
+      diamondId: "668e8c85eafcce4558630fc6",
+      shellId: "668e848a531f048cfca1e734",
+      materialId: "668e8dd9eadfc3da84dd27a0",
+      quantity: 2,
+      price: 1720,
+      image: [
+        "https://thediamondstore.imgix.net/productimages/LBSR65-YD100y-2.jpg",
+      ],
+      description:
+        "This exquisite Aurora ring is part of our new Elara Collection that showcases the breathtaking beauty of sustainable coloured lab diamonds. The magnificent yellow lab diamond solitaire looks elegant in a yellow gold setting, catching the eye with its unrivalled brilliance. An unforgettable, ethical gift your loved one will cherish forever.",
+      createdAt: "2024-07-10T13:37:10.070Z",
+      updatedAt: "2024-07-10T13:37:10.070Z",
+      __v: 0,
+    },
+    user: {
+      cart: [],
+      _id: "668f8f84a8254ececb42c1aa",
+      name: "Q",
+      email: "qsao2212@gmail.com",
+      password: "123123",
+      phoneNumber: null,
+      address: null,
+      createdAt: "2024-07-11T07:53:40.133Z",
+      updatedAt: "2024-07-11T07:53:40.133Z",
+      __v: 0,
+    },
+    quantity: 1,
+    size: 8,
+    createdAt: "2024-07-11T21:34:53.813Z",
+    updatedAt: "2024-07-11T21:34:53.813Z",
+    __v: 0,
+  },
+  {
+    _id: "66905443ccd6f078842d0e05",
+    productId: {
+      _id: "668e90c8e48ee764421381b7",
+      productName: "1.73ct Garnet Cluster Ring In 9K White Gold",
+      diamondId: "668e901f1cabf69dfeb62e16",
+      shellId: "668e9082e48ee764421381b4",
+      materialId: "668e29c450d3ae9df2b18067",
+      quantity: 3,
+      price: 330,
+      image: ["https://thediamondstore.imgix.net/productimages/E5064-h.jpg"],
+      description:
+        "An eye-catching Garnet Ring in 9K White Gold. Claw setting. Free UK delivery and a 5 year guarantee.",
+      createdAt: "2024-07-10T13:46:48.344Z",
+      updatedAt: "2024-07-10T13:46:48.344Z",
+      __v: 0,
+    },
+    user: {
+      cart: [],
+      _id: "668f8f84a8254ececb42c1aa",
+      name: "Q",
+      email: "qsao2212@gmail.com",
+      password: "123123",
+      phoneNumber: null,
+      address: null,
+      createdAt: "2024-07-11T07:53:40.133Z",
+      updatedAt: "2024-07-11T07:53:40.133Z",
+      __v: 0,
+    },
+    quantity: 1,
+    size: 10,
+    createdAt: "2024-07-11T21:53:07.462Z",
+    updatedAt: "2024-07-11T21:53:07.462Z",
+    __v: 0,
+  },
+  {
+    _id: "6690c1587c93d5fd956e76b8",
+    productId: {
+      _id: "668e935de48ee764421381c0",
+      productName:
+        "Erika Lab Diamond 1.70ct Emerald Cut Ring In 18K Yellow Gold F/VS1",
+      diamondId: "668e9209e48ee764421381ba",
+      shellId: "668e8599531f048cfca1e738",
+      materialId: "668e8dd9eadfc3da84dd27a0",
+      quantity: 5,
+      price: 1975,
+      image: [
+        "https://thediamondstore.imgix.net/productimages/LBSR66-D100y-2.jpg",
+        "https://thediamondstore.imgix.net/productimages/LBSR66-D100y-1.jpg",
+        "https://thediamondstore.imgix.net/productimages/LBSR66-D100y-3.jpg",
+      ],
+      description:
+        "A brilliant certified Erika Engagement Ring in 18K Yellow Gold. Claw setting. 1.70CT of F/VS1 quality diamonds. Free UK delivery and a 5 year guarantee.",
+      createdAt: "2024-07-10T13:57:49.299Z",
+      updatedAt: "2024-07-10T13:57:49.299Z",
+      __v: 0,
+    },
+    user: {
+      cart: [],
+      _id: "668f8f84a8254ececb42c1aa",
+      name: "Q",
+      email: "qsao2212@gmail.com",
+      password: "123123",
+      phoneNumber: null,
+      address: null,
+      createdAt: "2024-07-11T07:53:40.133Z",
+      updatedAt: "2024-07-11T07:53:40.133Z",
+      __v: 0,
+    },
+    quantity: 1,
+    size: 9,
+    createdAt: "2024-07-12T05:38:32.815Z",
+    updatedAt: "2024-07-12T05:38:32.815Z",
+    __v: 0,
+  },
+];
+
+export default function CheckoutScreen({ route }) {
+  const { products } = route.params;
+
+  const productList = products && products.length > 0 ? products : tempItems;
   const [personalInfo, setPersonalInfo] = useState({
     email: "",
-    phone: "",
+    phoneNumber: "",
     address: {
       province: "",
       district: "",
@@ -30,89 +151,18 @@ export default function CheckoutScreen() {
       details: "",
     },
   });
+  const [currentUser, setCurrentUser] = useState(null);
   const [isShipping, setIsShipping] = useState(null);
   const [provinceList, setProvinceList] = useState([]);
   const [districtList, setDistrictList] = useState([]);
   const [wardList, setWardList] = useState([]);
+  const [isUpdatingAddress, setIsUpdatingAddress] = useState(false);
 
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const navigate = useNavigation();
-
-  const tempItems = [
-    {
-      _id: "668e2baa1d9ba0c851a29441",
-      productName:
-        "Anastasia Lab Diamond Halo Engagement Ring 18K White Gold 1.30ct F/VS1",
-      diamondId: {
-        _id: "668e2ac450d3ae9df2b1806b",
-        type: "Lab Diamond",
-      },
-      shellId: {
-        _id: "668e2a1f50d3ae9df2b18069",
-        shellName: "Halo",
-        category: "ring",
-        size: [7, 8, 9, 10],
-        createdAt: "2024-07-10T06:28:47.501Z",
-        updatedAt: "2024-07-10T06:28:47.501Z",
-        __v: 0,
-      },
-      materialId: {
-        _id: "668e29c450d3ae9df2b18067",
-        materialName: "White Gold",
-        createdAt: "2024-07-10T06:27:16.519Z",
-        updatedAt: "2024-07-10T06:27:16.519Z",
-        __v: 0,
-      },
-      quantity: 300,
-      price: 35650,
-      image: [
-        "https://thediamondstore.imgix.net/productimages/LBSR57-D50w-2.jpg",
-      ],
-      description:
-        "To create breathtaking brilliance, this exquisite engagement ring brings together a stunning lab grown solitaire and a double halo of diamonds. Drawing the eye to the solitaire is a split shank band, which provides more surface area for dazzling accent diamonds. The handcrafted 18K white gold setting looks and feels luxurious on the hand.",
-      createdAt: "2024-07-10T06:35:22.888Z",
-      updatedAt: "2024-07-10T06:35:22.888Z",
-      __v: 0,
-    },
-    {
-      _id: "668e8d12eafcce4558630fc8",
-      productName:
-        "Aurora Yellow Lab Diamond Emerald Cut And Trillion 1.70ct Ring In 18K White Gold - Elara Collection",
-      diamondId: {
-        _id: "668e8c85eafcce4558630fc6",
-        type: "Yellow Lab Diamond",
-      },
-      shellId: {
-        _id: "668e848a531f048cfca1e734",
-        shellName: "Vintage",
-        category: "ring",
-        size: [7, 8, 9, 10],
-        createdAt: "2024-07-10T12:54:34.951Z",
-        updatedAt: "2024-07-10T12:54:34.951Z",
-        __v: 0,
-      },
-      materialId: {
-        _id: "668e29c450d3ae9df2b18067",
-        materialName: "White Gold",
-        createdAt: "2024-07-10T06:27:16.519Z",
-        updatedAt: "2024-07-10T06:27:16.519Z",
-        __v: 0,
-      },
-      quantity: 57,
-      price: 49158,
-      image: [
-        "https://thediamondstore.imgix.net/productimages/LBSR65-YD100w-2.jpg",
-      ],
-      description:
-        "This exquisite Aurora ring is part of our new Elara Collection that showcases the breathtaking beauty of sustainable coloured lab diamonds. The magnificent yellow lab diamond solitaire looks elegant in a platinum setting, catching the eye with its unrivalled brilliance. An unforgettable, ethical gift your loved one will cherish forever.",
-      createdAt: "2024-07-10T13:30:58.321Z",
-      updatedAt: "2024-07-10T13:30:58.321Z",
-      __v: 0,
-    },
-  ];
 
   const fetchProvinces = async () => {
     await axios
@@ -132,8 +182,46 @@ export default function CheckoutScreen() {
       .catch((err) => console.log(err));
   };
 
+  const getUserData = async () => {
+    await AsyncStorage.getItem("user").then((value) => {
+      const userData = JSON.parse(value);
+      setCurrentUser(userData);
+      setPersonalInfo({
+        ...personalInfo,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber ? userData.phoneNumber : "",
+      });
+
+      if (userData.address && userData.address.length > 0) {
+        const addressArray = userData.address.split(", ");
+        setPersonalInfo({
+          email: userData.email,
+          phoneNumber: userData.phoneNumber ? userData.phoneNumber : "",
+          address: {
+            province: addressArray[3],
+            district: addressArray[2],
+            ward: addressArray[1],
+            details: addressArray[0],
+          },
+        });
+      }
+    });
+  };
+
+  const getTotal = () => {
+    setTotal(0);
+    productList.map((item) => {
+      setTotal(
+        (current) =>
+          current + parseFloat(item.productId.price) * parseInt(item.quantity)
+      );
+    });
+  };
+
   useEffect(() => {
+    getUserData();
     fetchProvinces();
+    getTotal();
   }, []);
 
   const handleSelectProvince = async (value) => {
@@ -240,15 +328,15 @@ export default function CheckoutScreen() {
     setIsLoading(true);
     await axios
       .post("http://10.0.2.2:8000/api/stripe/intents", {
-        amount: 12345678,
+        amount: total * 100,
       })
       .then(async (res) => {
         console.log("Intent created: ", res.data.paymentIntent);
         const { error: paymentSheetError } = await initPaymentSheet({
-          merchantDisplayName: "Example, Inc.",
+          merchantDisplayName: "Kicusho Inc.",
           paymentIntentClientSecret: res.data.paymentIntent,
           defaultBillingDetails: {
-            name: "iAmDou",
+            name: currentUser.name,
           },
         });
         if (paymentSheetError) {
@@ -261,26 +349,33 @@ export default function CheckoutScreen() {
   };
 
   const showPayOrder = async () => {
+    console.log("PERSONAL INFO: ", personalInfo);
+
     if (
       !personalInfo.email.match(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       )
     ) {
       Alert.alert(
-        "Invalid email",
+        "Invalid email!",
         "Please try again with a valid email address!"
       );
     } else if (
-      personalInfo.phone.length < 9 ||
-      personalInfo.phone.length > 12
+      personalInfo.phoneNumber.length < 9 ||
+      personalInfo.phoneNumber.length > 12
     ) {
       Alert.alert(
-        "Invalid phone number",
+        "Invalid phone number!",
         "Please try again with a valid phone number!"
+      );
+    } else if (isShipping === null) {
+      Alert.alert(
+        "Unselected delivery method!",
+        "Please select either a delivery or a direct pick up!"
       );
     } else if (isShipping && personalInfo.address.details.length === 0) {
       Alert.alert(
-        "Empty address",
+        "Empty address!",
         "Please fulfill the entire address information!"
       );
     } else {
@@ -290,14 +385,77 @@ export default function CheckoutScreen() {
         Alert.alert(`${paymentError.code}`, paymentError.message);
         return;
       } else {
-        Alert.alert("Successfully paid", "Nice one");
-        console.log("Completed order: ", personalInfo);
+        setIsLoading(true);
+        //Save personal information if empty or update latest information
+        await axios
+          .patch(`http://10.0.2.2:8000/api/users/${currentUser.email}`, {
+            phoneNumber: personalInfo.phoneNumber,
+            address: isShipping
+              ? personalInfo.address.details +
+                ", " +
+                personalInfo.address.ward +
+                ", " +
+                personalInfo.address.district +
+                ", " +
+                personalInfo.address.province
+              : currentUser.address,
+          })
+          .then(async (res) => {
+            console.log("Updated personal info: ", res.data);
+            await AsyncStorage.setItem("user", JSON.stringify(res.data.result));
+          })
+          .catch((err) => console.log(err));
+
+        //Create order
+        const newOrderCode = generateNumericCode(10);
+        await axios
+          .post("http://10.0.2.2:8000/api/orders", {
+            user: currentUser._id,
+            transactionId: newOrderCode,
+            deliveryRequired: isShipping,
+            deliveryInfo: {
+              email: personalInfo.email,
+              phoneNumber: personalInfo.phoneNumber,
+              address: isShipping
+                ? personalInfo.address.details +
+                  ", " +
+                  personalInfo.address.ward +
+                  ", " +
+                  personalInfo.address.district +
+                  ", " +
+                  personalInfo.address.province
+                : "",
+            },
+          })
+          .then((res) => {
+            console.log("Order created: ", res.data);
+            const orderId = res.data._id;
+            const transactionId = res.data.transactionId;
+            productList.map(async (item) => {
+              await axios
+                .post("http://10.0.2.2:8000/api/orderItems", {
+                  order: orderId,
+                  product: item.productId._id,
+                  quantity: item.quantity,
+                  price: item.productId.price,
+                  size: item.size,
+                })
+                .then((res) => {
+                  console.log("Created OrderItem: ", res.data);
+                })
+                .catch((err) => console.log(err));
+            });
+            setIsLoading(false);
+            navigate.navigate("SuccessOrder", { transactionId: transactionId });
+          })
+          .catch((err) => console.log(err));
       }
     }
   };
 
   return (
     <View style={tw`flex-1`}>
+      {isLoading ? <Loading /> : null}
       <StripeProvider publishableKey="pk_test_51Pauny2MJLkHoWTV61f7jo4zZfEmbYTcku5rt3YKc0zi1dqHxpjVsBAhgcZ8yxIhjNf7QxAGe36rbUFrxsmYUXF200WUB044Tw">
         <SafeAreaView
           style={tw`absolute top-8 left-0 right-0 w-full flex flex-row justify-between px-4 pt-2 z-20`}
@@ -345,11 +503,11 @@ export default function CheckoutScreen() {
                 placeholder="Phone number..."
                 placeholderTextColor="#ccc"
                 keyboardType="number-pad"
-                value={personalInfo.phone}
+                value={personalInfo.phoneNumber}
                 onChangeText={(e) => {
                   setPersonalInfo({
                     ...personalInfo,
-                    phone: e,
+                    phoneNumber: e,
                   });
                 }}
                 style={tw`w-full bg-gray-800 text-white rounded-xl px-4 py-1`}
@@ -382,7 +540,36 @@ export default function CheckoutScreen() {
                 </TouchableOpacity>
               </View>
 
-              <View style={tw`w-full flex gap-4 ${!isShipping && "hidden"}`}>
+              <View
+                style={tw`flex-1 ${
+                  (!isShipping || isUpdatingAddress) && "hidden"
+                }`}
+              >
+                <Text style={tw`text-gray-600 text-xs`}>Address</Text>
+                <Text style={tw`text-white`}>
+                  {currentUser && currentUser.address}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsUpdatingAddress(true);
+                  }}
+                  style={tw`w-32 flex items-center p-2 bg-sky-800 rounded-xl mt-2`}
+                >
+                  <Text style={tw`text-white font-semibold`}>
+                    + Update address
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View
+                style={tw`w-full flex gap-4 ${
+                  (!isShipping ||
+                    (currentUser &&
+                      currentUser.address.length > 0 &&
+                      !isUpdatingAddress)) &&
+                  "hidden"
+                }`}
+              >
                 <View style={tw`bg-gray-800 rounded-xl overflow-hidden`}>
                   <RNPickerSelect
                     placeholder={{
@@ -451,14 +638,14 @@ export default function CheckoutScreen() {
             <Text style={tw`text-gray-400 font-semibold px-4`}>Items</Text>
             <ScrollView style={tw`w-full py-2 max-h-64`}>
               <View style={tw`w-full flex border-t border-white gap-2`}>
-                {tempItems.map((item) => {
+                {productList.map((item) => {
                   return (
                     <TouchableOpacity
                       key={item._id}
                       style={tw`w-full flex-row gap-2 py-2 border-b border-gray-500`}
                     >
                       <Image
-                        source={{ uri: item.image[0] }}
+                        source={{ uri: item.productId.image[0] }}
                         style={{
                           width: 50,
                           height: 50,
@@ -468,20 +655,20 @@ export default function CheckoutScreen() {
                       />
                       <View style={tw`max-w-1/2 flex gap-2`}>
                         <Text style={tw`text-white text-xs`} numberOfLines={2}>
-                          {item.productName}
+                          {item.productId.productName}
                         </Text>
                         <Text
                           style={tw`text-white text-[0.6rem] text-gray-500`}
                         >
-                          Size: 10
+                          Size: {item.size}
                         </Text>
                       </View>
                       <View style={tw`flex items-center gap-1 ml-auto mr-2`}>
                         <Text style={tw`text-gray-400 text-[0.7rem]`}>
-                          Quantity: 1
+                          Quantity: {item.quantity}
                         </Text>
                         <Text style={tw`text-red-300`}>
-                          $ {CurrencySplitter(item.price)}
+                          $ {CurrencySplitter(item.productId.price)}
                         </Text>
                       </View>
                     </TouchableOpacity>
@@ -493,9 +680,15 @@ export default function CheckoutScreen() {
         </ScrollView>
 
         <View style={tw`w-full flex-row items-center bg-black`}>
+          <View style={tw`flex self-start gap-1 pl-1 pr-4`}>
+            <Text style={tw`text-gray-300 text-[0.6rem]`}>Total</Text>
+            <Text style={tw`text-white font-bold text-[1.2rem]`}>
+              $ {CurrencySplitter(total)}
+            </Text>
+          </View>
           <TouchableOpacity
             onPress={() => showPayOrder()}
-            style={tw`w-full flex-row items-center justify-center gap-2 rounded-xl bg-sky-700 p-2 mb-4`}
+            style={tw`grow flex-row items-center justify-center gap-2 rounded-xl bg-sky-700 p-2 mb-4`}
           >
             <Text style={tw`text-white font-bold text-lg`}>
               Proceed paying via
@@ -507,5 +700,3 @@ export default function CheckoutScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({});

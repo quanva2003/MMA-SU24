@@ -8,9 +8,8 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-
+import { jwtDecode } from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -21,9 +20,11 @@ const LoginScreen = ({ navigation }) => {
       const res = await axios.post("http://10.0.2.2:8000/api/users/login", {
         email: email,
         password: password,
-
       });
       console.log("Success", res.data);
+      const decoded = jwtDecode(res.data.token).user;
+      console.log("Decoded: ", decoded);
+      await AsyncStorage.setItem("user", JSON.stringify(decoded));
       await AsyncStorage.setItem("userToken", res.data.token);
       await AsyncStorage.setItem("userEmail", email);
       navigation.navigate("Main");

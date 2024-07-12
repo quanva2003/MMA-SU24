@@ -4,7 +4,7 @@ module.exports = {
   //endpoint for get all cart items
   GetAllCartItems: async (req, res) => {
     try {
-      const cartItem = await CartItem.find();
+      const cartItem = await CartItem.find().populate("productId user");
       res.status(200).json(cartItem);
     } catch (error) {
       console.log("Error get all cartItem!", error);
@@ -16,7 +16,9 @@ module.exports = {
   GetCartItemById: async (req, res) => {
     try {
       const { id: cartItemId } = req.params;
-      const cartItem = await CartItem.findById(cartItemId);
+      const cartItem = await CartItem.findById(cartItemId).populate(
+        "productId user"
+      );
 
       if (!cartItem) {
         return res.status(404).json({ message: "cartItem not found" });
@@ -32,7 +34,9 @@ module.exports = {
   GetCartItemByUser: async (req, res) => {
     try {
       const { id: userId } = req.params;
-      const cartItems = await CartItem.find({ user: userId });
+      const cartItems = await CartItem.find({ user: userId }).populate(
+        "productId user"
+      );
 
       if (!cartItems.length) {
         return res
