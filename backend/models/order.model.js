@@ -27,6 +27,10 @@ const orderSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    total: {
+      type: Number,
+      required: true,
+    },
     deliveryRequired: {
       type: Boolean,
       required: true,

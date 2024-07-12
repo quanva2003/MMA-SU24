@@ -17,6 +17,7 @@ import TopProduct from "./src/screens/TopProduct";
 import ProductDetail from "./src/screens/ProductDetail";
 import CheckoutScreen from "./src/screens/CheckoutScreen";
 import SuccessOrderScreen from "./src/screens/SuccessOrderScreen";
+import OrdersScreen from "./src/screens/OrdersScreen";
 import SaleScreen from "./src/screens/SaleScreen";
 import CheckOrderScreen from "./src/screens/CheckOrderScreen";
 import CustomerPointsScreen from "./src/screens/CustomerPointsScreen";
@@ -150,6 +151,7 @@ function App() {
           <Stack.Screen name="ProductDetail" component={ProductDetail} />
           <Stack.Screen name="Checkout" component={CheckoutScreen} />
           <Stack.Screen name="SuccessOrder" component={SuccessOrderScreen} />
+          <Stack.Screen name="Orders" component={OrdersScreen} />
           <Stack.Screen name="CheckOrder" component={CheckOrderScreen} />
           <Stack.Screen name="ChooseNi" component={ChooseNi} />
           <Stack.Screen name="AllProducts" component={AllProducts} />
