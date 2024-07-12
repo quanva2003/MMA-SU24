@@ -21,7 +21,6 @@ const CartScreen = () => {
   const navigation = useNavigation();
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -30,6 +29,7 @@ const CartScreen = () => {
 
     return unsubscribe;
   }, [navigation]);
+
   const fetchCartItems = async () => {
     try {
       const email = await AsyncStorage.getItem("userEmail");
@@ -44,27 +44,14 @@ const CartScreen = () => {
         `http://10.0.2.2:8000/api/users/getUser/${email}`
       );
       const userId = userIdResponse.data.user._id;
+      console.log("user:", userId);
 
       const cartResponse = await axios.get(
         `http://10.0.2.2:8000/api/carts/user/${userId}`
       );
       const cartItems = cartResponse.data;
-      console.log(cartItems);
-      const productDetailsPromises = cartItems.map(async (item) => {
-        const productResponse = await axios.get(
-          `http://10.0.2.2:8000/api/products/${item.productId}`
-        );
-        return {
-          ...item,
-          product: productResponse.data,
-        };
-      });
-
-      const cartItemsWithProductDetails = await Promise.all(
-        productDetailsPromises
-      );
-      setCartItems(cartItemsWithProductDetails);
-      console.log("haha", cartItemsWithProductDetails);
+      console.log("cart", cartItems);
+      setCartItems(cartItems);
     } catch (error) {
       console.error("Error fetching cart items:", error);
       Alert.alert("Error", "Failed to fetch cart items. Please try again.");
@@ -84,7 +71,7 @@ const CartScreen = () => {
 
   const calculateTotalPrice = (items) => {
     const total = items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum, item) => sum + item.productId.price * item.quantity,
       0
     );
     setTotalPrice(total);
@@ -109,9 +96,11 @@ const CartScreen = () => {
     }
     return text;
   };
+
   useEffect(() => {
     fetchCartItems();
   }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Cart</Text>
@@ -125,16 +114,19 @@ const CartScreen = () => {
           renderItem={({ item }) => (
             <View style={styles.cartItem}>
               <Image
-                source={{ uri: item.product.image[0] }}
+                source={{ uri: item.productId.image[0] }}
                 style={styles.itemImage}
               />
               <View style={styles.itemDetails}>
                 <Text style={styles.itemName}>
-                  {truncateText(item.product.productName, 4)}
+                  {truncateText(item.productId.productName, 4)}
                 </Text>
                 <Text style={styles.itemSize}>Size: {item.size}</Text>
                 <Text style={styles.itemPrice}>
-                  Price: {item.product.price}$
+                  Price: {item.productId.price}$
+                </Text>
+                <Text style={styles.itemDescription}>
+                  {truncateText(item.productId.description, 10)}
                 </Text>
                 <View style={styles.quantityContainer}>
                   <Stepper
@@ -158,7 +150,9 @@ const CartScreen = () => {
         <View style={styles.footer}>
           <Text style={styles.totalText}>Total: {totalPrice}$</Text>
           <TouchableOpacity
-            onPress={() => setModalVisible(true)}
+            onPress={() =>
+              navigation.navigate("Checkout", { products: cartItems })
+            }
             style={styles.buyBtn}
           >
             <Text style={tw`text-white font-bold text-lg`}>BUY IT</Text>
@@ -166,7 +160,7 @@ const CartScreen = () => {
         </View>
       )}
 
-      <Modal
+      {/* <Modal
         animationType="fade"
         transparent={true}
         visible={modalVisible}
@@ -199,7 +193,7 @@ const CartScreen = () => {
             </View>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 };
@@ -250,6 +244,11 @@ const styles = StyleSheet.create({
     color: "#FFDE4D",
     fontSize: 16,
     fontWeight: "bold",
+    marginTop: 5,
+  },
+  itemDescription: {
+    color: "#aaa",
+    fontSize: 14,
     marginTop: 5,
   },
   quantityContainer: {

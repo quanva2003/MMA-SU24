@@ -15,7 +15,7 @@ import axios from "axios";
 import tw from "twrnc";
 
 const truncateText = (text, wordLimit) => {
-  if (!text) return ""; // Return an empty string if text is undefined
+  if (!text) return "";
   const words = text.split(" ");
   if (words.length > wordLimit) {
     return words.slice(0, wordLimit).join(" ") + "...";
@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
     margin: 5,
     alignItems: "center",
     marginLeft: 10,
-    // marginBottom: 10,
   },
   productImage: {
     width: 163,
