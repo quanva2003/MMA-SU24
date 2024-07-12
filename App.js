@@ -27,7 +27,7 @@ const Tab = createBottomTabNavigator();
 const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="SaleScreen" component={SaleScreen} />
       {/* <Stack.Screen name="CartScreen" component={CartScreen} /> */}
     </Stack.Navigator>
   );

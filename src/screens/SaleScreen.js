@@ -4,6 +4,7 @@ import { View, Text, FlatList, Image, Button, TouchableOpacity, TextInput, Style
 const diamondsData = [
   {
     id: '1',
+    user: 'John',
     type: 'Round Brilliant',
     carat: '1.0',
     size: '6.5mm',
@@ -14,6 +15,7 @@ const diamondsData = [
   },
   {
     id: '2',
+    user: 'Jane',
     type: 'Princess Cut',
     carat: '1.5',
     size: '6.0mm',
@@ -24,6 +26,7 @@ const diamondsData = [
   },
   {
     id: '3',
+    user: 'Michael',
     type: 'Princess Cut',
     carat: '1.5',
     size: '6.0mm',
@@ -34,6 +37,7 @@ const diamondsData = [
   },
   {
     id: '4',
+    user: 'Jordan',
     type: 'Princess Cut',
     carat: '1.5',
     size: '6.0mm',
@@ -46,13 +50,15 @@ const diamondsData = [
 
 const { width } = Dimensions.get('window');
 
-function SaleScreen({ navigation }) {
-  const handleCheckOrder = () => {
-    navigation.navigate('CheckOrder');
-  };
+function SaleScreen() {
+  const navigation = useNavigation();
 
   const handleViewCustomerPoints = () => {
     navigation.navigate('CustomerPoints');
+  };
+
+  const handleItemPress = (item) => {
+    navigation.navigate('ChooseNi', { item });
   };
 
   return (
@@ -64,19 +70,20 @@ function SaleScreen({ navigation }) {
         contentContainerStyle={styles.productList}
         numColumns={2}
         renderItem={({ item }) => (
-          <View style={styles.productCard}>
+          <TouchableOpacity style={styles.productCard} onPress={() => handleItemPress(item)}>
             <Image source={{ uri: item.image }} style={styles.productImage} />
             <Text style={styles.productDescription}>{item.type}</Text>
             <Text style={styles.productDescription}>Carat: {item.carat}</Text>
+            <Text style={styles.productDescription}>{item.user}</Text>
             <Text style={styles.productDescription}>Size: {item.size}</Text>
             <Text style={styles.productDescription}>Price: ${item.price}</Text>
-            <Text style={styles.productDescription}>Status: {item.status}</Text>
-            <Text style={styles.productDescription}>Discount: {item.discount}</Text>
-          </View>
+            <Text style={[styles.productDescription, item.status === 'Available' ? styles.available : styles.sold]}>
+              Status: {item.status}
+            </Text>
+          </TouchableOpacity>
         )}
       />
       <View style={styles.buttonContainer}>
-        <Button title="Check Order" onPress={handleCheckOrder} color="#1c1c1c" />
         <Button title="View Customer Points" onPress={handleViewCustomerPoints} color="#1c1c1c" />
       </View>
     </View>
@@ -86,39 +93,54 @@ function SaleScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: '#101010',
     paddingTop: 40,
     paddingHorizontal: 10,
   },
   topHeader: {
-    color: "#ffffff",
-    fontSize: 20,
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 20,
     paddingLeft: 20,
   },
   productList: {
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   productCard: {
-    backgroundColor: "#1c1c1c",
+    backgroundColor: '#1c1c1c',
     borderRadius: 10,
-    padding: 10,
+    padding: 15,
     margin: 5,
-    alignItems: "center",
+    alignItems: 'center',
     width: (width / 2) - 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   productImage: {
-    width: "100%",
+    width: '100%',
     height: 150,
     borderRadius: 10,
     marginBottom: 10,
     resizeMode: 'cover',
   },
   productDescription: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 14,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 5,
+  },
+  available: {
+    color: '#4CAF50',
+  },
+  sold: {
+    color: '#F44336',
   },
   buttonContainer: {
     flexDirection: 'row',
