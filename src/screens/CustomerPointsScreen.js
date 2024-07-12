@@ -14,7 +14,7 @@ function CustomerPointsScreen() {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={tw`items-start`}
+        style={tw`items-start mb-4`}
         onPress={() => navigate.goBack()}
       >
         <Icon name="arrow-back" size={24} color="#fff" />
@@ -29,6 +29,7 @@ function CustomerPointsScreen() {
             <Text style={styles.customerPoints}>Points: {item.points}</Text>
           </View>
         )}
+        contentContainerStyle={styles.listContent}
       />
     </View>
   );
@@ -37,30 +38,42 @@ function CustomerPointsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#101010",
     paddingTop: 40,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   topHeader: {
     color: "#ffffff",
-    fontSize: 20,
+    fontSize: 26,
+    fontWeight: 'bold',
     marginBottom: 20,
-    paddingLeft: 20,
   },
   customerCard: {
-    backgroundColor: "#1c1c1c",
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 5,
+    backgroundColor: "#1e1e1e",
+    padding: 15,
+    marginVertical: 8,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   customerName: {
-    color: "#fff",
-    fontSize: 16,
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: 5,
   },
   customerPoints: {
-    color: "#fff",
-    fontSize: 14,
+    color: "#b0b0b0",
+    fontSize: 16,
+  },
+  listContent: {
+    paddingBottom: 20,
   },
 });
 
