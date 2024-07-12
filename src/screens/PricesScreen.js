@@ -32,7 +32,7 @@ const PriceComponent = () => {
   const [size, setSize] = useState([3.6, 10.2]);
   const [filteredDiamonds, setFilteredDiamonds] = useState([]);
 
-  const colorLabels = ["D", "E", "F", "G"];
+  const colorLabels = ["F", "G", "H"];
   const clarityLabels = ["IF/FL", "VVS2", "VS1", "VVS1", "VS2", "SI1", "SI2"];
   const filterDiamonds = () => {
     console.log("color:", color);
