@@ -16,12 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import CurrencySplitter from "../assistants/currencySpliter";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-console.log("Imports successful:", {
-  useNavigation,
-  CurrencySplitter,
-  AsyncStorage,
-  axios,
-});
+
 const ProductDetail = ({ route }) => {
   const { product } = route.params;
   const [isInCart, setIsInCart] = useState(false);
@@ -64,7 +59,6 @@ const ProductDetail = ({ route }) => {
   };
 
   const handleAddToCart = async () => {
-    navigate.navigate("Checkout", { products: [] });
     try {
       const email = await AsyncStorage.getItem("userEmail");
       const token = await AsyncStorage.getItem("userToken");
@@ -73,7 +67,10 @@ const ProductDetail = ({ route }) => {
         Alert.alert("Please log in to add items to cart.");
         return;
       }
-
+      if (currentSize === 0) {
+        Alert.alert("Please select a size.");
+        return;
+      }
       const userIdResponse = await axios.get(
         `http://10.0.2.2:8000/api/users/getUser/${email}`
       );
@@ -85,7 +82,7 @@ const ProductDetail = ({ route }) => {
         quantity: 1,
         size: currentSize !== 0 ? currentSize : null,
       };
-
+      console.log(cartItemData);
       const response = await axios.post(
         `http://10.0.2.2:8000/api/carts/`,
         cartItemData
@@ -129,7 +126,7 @@ const ProductDetail = ({ route }) => {
       ) : (
         <>
           <ScrollView
-            style={tw`flex-1 mt-7.5 bg-stone-950 ${styles.container}`}
+            style={[tw`flex-1 mt-7.5 bg-stone-950`, styles.container]}
           >
             <View style={tw`w-full rounded-b-xl pb-2`}>
               <ImageBackground
@@ -226,14 +223,15 @@ const ProductDetail = ({ route }) => {
                       <TouchableOpacity
                         onPress={() => handleSelectSize(size)}
                         key={index}
-                        style={tw`min-w-8 min-h-8 flex items-center justify-center rounded-xl ${
+                        style={[
+                          tw`min-w-8 min-h-8 flex items-center justify-center rounded-xl`,
                           currentSize === size
-                            ? "bg-white"
-                            : "bg-black border border-white"
-                        }`}
+                            ? tw`bg-white`
+                            : tw`bg-black border border-white`,
+                        ]}
                       >
                         <Text
-                          style={tw`${currentSize !== size && "text-white"}`}
+                          style={currentSize !== size ? tw`text-white` : null}
                         >
                           {size}
                         </Text>
@@ -270,9 +268,10 @@ const ProductDetail = ({ route }) => {
             <TouchableOpacity
               onPress={handleAddToCart}
               disabled={isInCart}
-              style={tw`grow ml-4 px-2 py-3 rounded-xl flex-row items-center justify-center gap-2 ${
-                isInCart ? "bg-green-600" : "bg-white"
-              }`}
+              style={[
+                tw`grow ml-4 px-2 py-3 rounded-xl flex-row items-center justify-center gap-2`,
+                isInCart ? tw`bg-green-600` : tw`bg-white`,
+              ]}
             >
               {isInCart ? (
                 <Icon

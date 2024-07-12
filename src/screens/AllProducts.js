@@ -48,7 +48,8 @@ const AllProducts = () => {
       .get("http://10.0.2.2:8000/api/products")
       .then((response) => {
         setProductData(response.data);
-        setFilteredProductData(response.data); // Initialize filtered data with all products
+        console.log("all product:", response.data);
+        setFilteredProductData(response.data);
         setLoading(false);
       })
       .catch((error) => {
