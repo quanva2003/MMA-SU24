@@ -27,18 +27,21 @@ module.exports = {
   //endpoint for add material
   AddMaterial: async (req, res) => {
     try {
-      const existMaterial = await Material.findOne({ materialName: req.body });
+      const { materialName } = req.body; // Ensure req.body directly provides materialName as a string
       
+      // Check if materialName already exists
+      const existMaterial = await Material.findOne({ materialName });
       if (existMaterial) {
-        return res.status(400).json({ message: "Material already exist" });
-      };
+        return res.status(400).json({ message: "Material already exists" });
+      }
 
-      const newMaterial = new Material(req.body);
-      const material = await newMaterial.save();
-      res.status(200).json(material);
+      // Create new material instance
+      const newMaterial = new Material({ materialName });
+      const savedMaterial = await newMaterial.save();
+      res.status(200).json(savedMaterial);
     } catch (error) {
-      console.log("Error add material!", error);
-      res.status(500).json({ message: "Error add material!!!" })
+      console.error("Error adding material:", error);
+      res.status(500).json({ message: "Error adding material" });
     }
   },
 
