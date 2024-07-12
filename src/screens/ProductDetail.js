@@ -16,7 +16,12 @@ import { useNavigation } from "@react-navigation/native";
 import CurrencySplitter from "../assistants/currencySpliter";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-
+console.log("Imports successful:", {
+  useNavigation,
+  CurrencySplitter,
+  AsyncStorage,
+  axios,
+});
 const ProductDetail = ({ route }) => {
   const { product } = route.params;
   const [isInCart, setIsInCart] = useState(false);
@@ -99,8 +104,7 @@ const ProductDetail = ({ route }) => {
   };
 
   const handleSelectSize = (size) => {
-    if (size === currentSize) setCurrentSize(0);
-    else setCurrentSize(size);
+    setCurrentSize(size === currentSize ? 0 : size);
   };
 
   return (
@@ -141,28 +145,25 @@ const ProductDetail = ({ route }) => {
               >
                 {product.image && product.image.length > 0 ? (
                   <View
-                    style={tw`flex flex-row items-start justify-center gap-4 p-2
-                  ${product.image.length === 0 && "hidden"}`}
+                    style={tw`flex flex-row items-start justify-center gap-4 p-2`}
                   >
-                    {product.image.map((image, index) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => setCurrentImage(image)}
-                          key={index}
-                          style={tw`flex rounded-full overflow-hidden p-1 bg-gray-500`}
-                        >
-                          <Image
-                            source={{ uri: image }}
-                            style={{
-                              width: 50,
-                              height: 50,
-                              opacity: currentImage === image ? 1 : 0.3,
-                              borderRadius: 50,
-                            }}
-                          />
-                        </TouchableOpacity>
-                      );
-                    })}
+                    {product.image.map((image, index) => (
+                      <TouchableOpacity
+                        onPress={() => setCurrentImage(image)}
+                        key={index}
+                        style={tw`flex rounded-full overflow-hidden p-1 bg-gray-500`}
+                      >
+                        <Image
+                          source={{ uri: image }}
+                          style={{
+                            width: 50,
+                            height: 50,
+                            opacity: currentImage === image ? 1 : 0.3,
+                            borderRadius: 50,
+                          }}
+                        />
+                      </TouchableOpacity>
+                    ))}
                   </View>
                 ) : null}
               </ImageBackground>
@@ -221,24 +222,23 @@ const ProductDetail = ({ route }) => {
                 <View style={tw`flex-row items-center gap-4`}>
                   <Text style={tw`text-white opacity-50`}>Available size:</Text>
                   <View style={tw`flex-row items-center gap-2`}>
-                    {product.shellId.size.map((size, index) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => handleSelectSize(size)}
-                          key={index}
-                          style={tw`min-w-8 min-h-8 flex items-center justify-center rounded-xl bg-white ${
-                            currentSize !== size &&
-                            "bg-black border border-white"
-                          }`}
+                    {product.shellId.size.map((size, index) => (
+                      <TouchableOpacity
+                        onPress={() => handleSelectSize(size)}
+                        key={index}
+                        style={tw`min-w-8 min-h-8 flex items-center justify-center rounded-xl ${
+                          currentSize === size
+                            ? "bg-white"
+                            : "bg-black border border-white"
+                        }`}
+                      >
+                        <Text
+                          style={tw`${currentSize !== size && "text-white"}`}
                         >
-                          <Text
-                            style={tw`${currentSize !== size && "text-white"}`}
-                          >
-                            {size}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    })}
+                          {size}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
                   </View>
                 </View>
                 <Text style={tw`text-white italic text-xs px-8`}>
@@ -286,7 +286,7 @@ const ProductDetail = ({ route }) => {
               )}
               <Text
                 style={tw`${
-                  isInCart && "text-white"
+                  isInCart ? "text-white" : "text-black"
                 } flex-row items-center font-semibold`}
               >
                 {isInCart ? "ADDED" : "ADD"} TO CART
