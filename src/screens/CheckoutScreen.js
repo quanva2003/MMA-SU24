@@ -412,6 +412,7 @@ export default function CheckoutScreen({ route }) {
           .post("http://10.0.2.2:8000/api/orders", {
             user: currentUser._id,
             transactionId: newOrderCode,
+            total: parseFloat(total),
             deliveryRequired: isShipping,
             deliveryInfo: {
               email: personalInfo.email,

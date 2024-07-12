@@ -10,6 +10,7 @@ import {
 import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const AccountScreen = ({ navigation }) => {
   const [profileData, setProfileData] = useState({
@@ -17,6 +18,7 @@ const AccountScreen = ({ navigation }) => {
     name: "",
     token: "",
   });
+  const navigate = useNavigation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,10 +86,13 @@ const AccountScreen = ({ navigation }) => {
               Some short description of this type of report.
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.reportCard, styles.highlightedCard]}>
+          <TouchableOpacity
+            onPress={() => navigate.navigate("Orders")}
+            style={[styles.reportCard, styles.highlightedCard]}
+          >
             <View style={styles.cardHeader}>
               <Icon type="entypo" name="shopping-cart" color="#ffffff" />
-              <Text style={styles.reportTitle}>Đơn hàng</Text>
+              <Text style={styles.reportTitle}>Orders</Text>
             </View>
             <Text style={styles.reportDescription}>
               Some short description of this type of report.
@@ -96,7 +101,7 @@ const AccountScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.reportCard}>
             <View style={styles.cardHeader}>
               <Icon type="entypo" name="ticket" color="#ffffff" />
-              <Text style={styles.reportTitle}>Điểm</Text>
+              <Text style={styles.reportTitle}>Points</Text>
             </View>
             <Text style={styles.reportDescription}>
               Some short description of this type of report.
