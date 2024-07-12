@@ -35,13 +35,15 @@ const ManageOrdersScreen = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const response = await axios.put(`http://localhost:8000/api/orders/status/${orderId}`, { status: newStatus });
+      const response = await axios.put(
+        `http://10.0.2.2:8000/api/orders/status/${orderId}`,
+        { status: newStatus }
+      );
       console.log("Order status updated:", response.data);
     } catch (error) {
       console.error("Error updating order status:", error);
     }
   };
-  
 
   // Filter orders based on the selected tab
   const today = moment().startOf("day"); // Get today's date at the start of the day
