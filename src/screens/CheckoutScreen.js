@@ -373,7 +373,11 @@ export default function CheckoutScreen({ route }) {
         "Unselected delivery method!",
         "Please select either a delivery or a direct pick up!"
       );
-    } else if (isShipping && personalInfo.address.details.length === 0) {
+    } else if (
+      isShipping &&
+      currentUser.address.length === 0 &&
+      personalInfo.address.details.length === 0
+    ) {
       Alert.alert(
         "Empty address!",
         "Please fulfill the entire address information!"
