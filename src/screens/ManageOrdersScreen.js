@@ -22,7 +22,7 @@ const ManageOrdersScreen = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/orders/");
+        const response = await axios.get("http://10.0.2.2:8000/api/orders/");
         setOrders(response.data);
         console.log("Fetched orders:", response.data);
       } catch (error) {
@@ -138,15 +138,15 @@ const ManageOrdersScreen = () => {
 
                     <View style={tw`ml-4 flex-row`}>
                       <Text style={tw`text-white ml-1 mr-36`}>Size</Text>
-                      <Text style={tw`text-white`}>
-                        x{order.quantity}
-                      </Text>
+                      <Text style={tw`text-white`}>x{order.quantity}</Text>
                     </View>
                   </View>
                 </View>
                 <Card.Divider />
                 <View>
-                  <Text style={tw`text-white text-right`}>Price: {order.total}</Text>
+                  <Text style={tw`text-white text-right`}>
+                    Price: {order.total}
+                  </Text>
                 </View>
 
                 <Card.Divider />
@@ -177,8 +177,6 @@ const ManageOrdersScreen = () => {
 };
 
 export default ManageOrdersScreen;
-
-
 
 {
   /* <Text style={tw`text-white`}>Transaction ID: {order.transactionId}</Text> */

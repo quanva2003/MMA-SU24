@@ -4,7 +4,6 @@ import {
   Image,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -36,25 +35,28 @@ const truncateText = (text, wordLimit) => {
   return text;
 };
 
-const ShellScreen = () => {
+const ShellScreen = ({ route }) => {
   const navigate = useNavigation();
+  const { category } = route.params;
   const [productData, setProductData] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
       .get("http://10.0.2.2:8000/api/products")
       .then((response) => {
-        setProductData(response.data);
-
+        console.log("prop", response.data);
+        const filteredProducts = response.data.filter(
+          (product) => product.shellId.category === category
+        );
+        setProductData(filteredProducts);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
         setLoading(false);
       });
-  }, []);
+  }, [category]);
 
   return (
     <View style={tw`flex-1 bg-black mt-7.5 p-6`}>
@@ -64,12 +66,28 @@ const ShellScreen = () => {
       >
         <Icon name="arrow-back" size={24} color="#fff" />
       </TouchableOpacity>
-      <Text style={tw`text-white text-2xl font-bold mt-2 pb-3`}>Shell</Text>
+      <Text style={tw`text-white text-2xl font-bold mt-2 pb-3`}>
+        {category}
+      </Text>
+      {loading ? (
+        <View style={[tw`flex-1 justify-center items-center`]}>
+          <ActivityIndicator size="large" color="#fff" />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={productData}
+          renderItem={({ item }) => (
+            <ProductCard product={item} navigate={navigate} />
+          )}
+          keyExtractor={(item) => item._id}
+          numColumns={2}
+          contentContainerStyle={styles.productList}
+        />
+      )}
     </View>
   );
 };
-
-export default ShellScreen;
 
 const styles = StyleSheet.create({
   loadingContainer: {
@@ -134,3 +152,5 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 });
+
+export default ShellScreen;
