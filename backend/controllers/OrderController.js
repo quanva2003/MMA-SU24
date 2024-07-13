@@ -33,7 +33,9 @@ module.exports = {
   GetOrderByUser: async (req, res) => {
     try {
       const userId = req.params.id;
-      const order = await Order.find({ user: userId });
+      const order = await Order.find({ user: userId }).sort({
+        createdAt: -1,
+      });
 
       if (!order) {
         return res.status(404).json({ message: "order not found" });
