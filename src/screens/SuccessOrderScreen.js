@@ -23,7 +23,7 @@ export default function SuccessOrderScreen({ route }) {
       setTimeout(() => {
         setCountdown(value - 1);
         autoReturnHome(value - 1);
-      }, 1500);
+      }, 1000);
     }
   };
 
