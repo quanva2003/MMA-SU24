@@ -62,18 +62,17 @@ export default function SingleOrder({ order }) {
             <Text style={tw`inline ${itemList.length < 2 && "hidden"}`}>s</Text>
           </Text>
         </View>
-        <View style={tw`grow flex items-start`}>
-          <Text style={tw`text-stone-600 text-[0.7rem]`}>Products</Text>
-          <Text style={tw`text-white`}>
-            {itemList.length} product
-            <Text style={tw`inline ${itemList.length < 2 && "hidden"}`}>s</Text>
-          </Text>
-        </View>
+
         <View style={tw`grow flex items-start`}>
           <Text style={tw`text-stone-600 text-[0.7rem]`}>Total</Text>
           <Text style={tw`text-white`}>
             $ <Text>{CurrencySplitter(parseFloat(order.total))}</Text>
           </Text>
+        </View>
+
+        <View style={tw`grow flex items-start`}>
+          <Text style={tw`text-stone-600 text-[0.7rem]`}>Status</Text>
+          <Text style={tw`text-white`}>{order.status}</Text>
         </View>
       </View>
     </View>

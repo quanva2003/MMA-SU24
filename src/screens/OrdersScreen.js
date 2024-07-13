@@ -84,27 +84,35 @@ export default function OrdersScreen() {
       </SafeAreaView>
 
       <ScrollView style={tw`flex-1 mt-7.5 bg-stone-950`}>
-        <View style={tw`w-full flex items-start pt-12 px-8`}>
+        <View
+          style={tw`w-full flex-row items-center justify-between pt-12 px-8`}
+        >
           <Text style={tw`text-white text-[2rem] font-bold pb-2`}>ORDERS</Text>
+          <TouchableOpacity onPress={() => fetchOrders()}>
+            <Icon type="ionicon" name="reload" color="#fff" size={24} />
+          </TouchableOpacity>
         </View>
 
         <View style={tw`w-full flex-row items-center px-4 pt-4`}>
           <TouchableOpacity
             onPress={() => setTab("upcoming")}
-            style={tw`grow flex items-center py-2 border-b-2 ${tab === "upcoming" ? "border-white" : "border-stone-800"
-              }`}
+            style={tw`grow flex items-center py-2 border-b-2 ${
+              tab === "upcoming" ? "border-white" : "border-stone-800"
+            }`}
           >
             <Text
-              style={tw`${tab === "upcoming" ? "text-white" : "text-stone-600"
-                }`}
+              style={tw`${
+                tab === "upcoming" ? "text-white" : "text-stone-600"
+              }`}
             >
               Upcoming orders
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setTab("past")}
-            style={tw`grow flex items-center py-2 border-b-2 ${tab === "past" ? "border-white" : "border-stone-800"
-              }`}
+            style={tw`grow flex items-center py-2 border-b-2 ${
+              tab === "past" ? "border-white" : "border-stone-800"
+            }`}
           >
             <Text
               style={tw`${tab === "past" ? "text-white" : "text-stone-600"}`}
