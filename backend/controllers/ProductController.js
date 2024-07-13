@@ -5,7 +5,7 @@ module.exports = {
   GetAllProduct: async (req, res) => {
     try {
       const product = await Product.find()
-        .populate("diamondId", "type")
+        .populate("diamondId")
         .populate("shellId", "shellName category size")
         .populate("materialId", "materialName");
       res.status(200).json(product);
@@ -20,7 +20,7 @@ module.exports = {
     try {
       const { id: productId } = req.params;
       const product = await Product.findById(productId)
-        .populate("diamondId", "type")
+        .populate("diamondId")
         .populate("shellId materialId");
       res.status(200).json(product);
     } catch (error) {
@@ -34,7 +34,7 @@ module.exports = {
       const { name } = req.params;
       const regex = new RegExp(name, "i");
       const products = await Product.find({ productName: regex })
-        .populate("diamondId", "type")
+        .populate("diamondId")
         .populate("shellId", "shellName category size")
         .populate("materialId", "materialName");
 

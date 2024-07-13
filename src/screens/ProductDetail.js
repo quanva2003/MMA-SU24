@@ -16,17 +16,48 @@ import { useNavigation } from "@react-navigation/native";
 import CurrencySplitter from "../assistants/currencySpliter";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import RingSize from "../../assets/ring-size.jpg";
+import NecklaceSize from "../../assets/necklace-size.jpg";
+import EarringsSize from "../../assets/earrings-size.png";
+import BraceletSize from "../../assets/bracelet-size.webp";
 
 const ProductDetail = ({ route }) => {
   const { product } = route.params;
   const [isInCart, setIsInCart] = useState(false);
   const [currentImage, setCurrentImage] = useState(product.image?.[0] || null);
   const [currentSize, setCurrentSize] = useState(0);
+  const [sizeInstruction, setSizeInstruction] = useState();
   const navigate = useNavigation();
 
   useEffect(() => {
     fetchCartItems();
+    getSizeInstruction();
   }, []);
+
+  const getSizeInstruction = () => {
+    switch (product.shellId.category) {
+      case "ring": {
+        const imageUri = Image.resolveAssetSource(RingSize).uri;
+        setSizeInstruction(imageUri);
+        break;
+      }
+      case "necklace": {
+        const imageUri = Image.resolveAssetSource(NecklaceSize).uri;
+        setSizeInstruction(imageUri);
+        break;
+      }
+      case "earrings": {
+        const imageUri = Image.resolveAssetSource(EarringsSize).uri;
+        setSizeInstruction(imageUri);
+        break;
+      }
+      case "bracelet": {
+        const imageUri = Image.resolveAssetSource(BraceletSize).uri;
+        setSizeInstruction(imageUri);
+        break;
+      }
+    }
+  };
 
   const fetchCartItems = async () => {
     try {
@@ -188,6 +219,20 @@ const ProductDetail = ({ route }) => {
                   </View>
                   <View style={tw`flex-row items-center gap-2`}>
                     <Icon
+                      type="font-awesome"
+                      name="diamond"
+                      size={16}
+                      color="#fff"
+                    />
+                    <Text style={tw`text-slate-200 text-sm font-light`}>
+                      Carat: {product.diamondId.carat} &#8226; Cut:{" "}
+                      {product.diamondId.cut} &#8226; Color:{" "}
+                      {product.diamondId.color} &#8226; Clarity:{" "}
+                      {product.diamondId.clarity}
+                    </Text>
+                  </View>
+                  <View style={tw`flex-row items-center gap-2`}>
+                    <Icon
                       type="font-awesome-5"
                       name="ring"
                       size={16}
@@ -239,10 +284,16 @@ const ProductDetail = ({ route }) => {
                     ))}
                   </View>
                 </View>
-                <Text style={tw`text-white italic text-xs px-8`}>
-                  We can help in size selecting unless you do not know the exact
-                  one.
-                </Text>
+              </View>
+
+              <View style={tw`flex-1 items-start gap-2 py-4`}>
+                <Text style={tw`text-white opacity-50`}>Size instruction</Text>
+                <Image
+                  source={{ uri: sizeInstruction }}
+                  style={tw`w-96 ${
+                    product.shellId.category === "earrings" && "w-64"
+                  } h-64 rounded-xl self-center`}
+                />
               </View>
 
               <View style={tw`flex-1 items-start gap-2 py-4`}>
