@@ -13,7 +13,7 @@ import CurrencySplitter from "../assistants/currencySpliter";
 import { useNavigation } from "@react-navigation/native";
 
 const PriceComponent = () => {
-<<<<<<< HEAD
+
   const colorLabels = ["F", "G", "H"];
   const clarityLabels = ["VS1", "VS", "I2", "SI1", "SI"];
   const navigate = useNavigation();
@@ -36,16 +36,7 @@ const PriceComponent = () => {
   }, []);
 
   const filterProducts = () => {
-=======
-  const [color, setColor] = useState("F");
-  const [clarity, setClarity] = useState("VS1");
-  const [size, setSize] = useState([3.6, 10.2]);
-  const [filteredDiamonds, setFilteredDiamonds] = useState([]);
 
-  const colorLabels = ["F", "G", "H"];
-  const clarityLabels = ["VS1", "VS", "I2", "SI1", "SI"];
-  const filterDiamonds = () => {
->>>>>>> 8643a2b1a2f2ffc16da81f412b85e214d9559616
     console.log("color:", color);
     console.log("clarity:", clarity);
     console.log("size range:", size);
@@ -99,11 +90,11 @@ const PriceComponent = () => {
         minimumValue={0}
         maximumValue={clarityLabels.length - 1}
         step={0.25}
-<<<<<<< HEAD
+
         value={clarityLabels.indexOf(clarity)}
-=======
-        value={clarity}
->>>>>>> 8643a2b1a2f2ffc16da81f412b85e214d9559616
+
+
+
         onChange={(value) => {
           setClarity(clarityLabels[Math.round(value * 4)]);
         }}
