@@ -1,65 +1,75 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Button,
-  FlatList,
-  CheckBox,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import { Checkbox, Slider } from "@ant-design/react-native";
-
-const diamonds = [
-  { size: 3.9, color: "D", clarity: "VVS1" },
-  { size: 4.5, color: "D", clarity: "VVS1" },
-  { size: 4.6, color: "D", clarity: "VVS1" },
-  { size: 4.1, color: "D", clarity: "VVS1" },
-  { size: 4.5, color: "E", clarity: "VVS1" },
-  { size: 3.8, color: "E", clarity: "VVS1" },
-  { size: 3.9, color: "E", clarity: "VVS1" },
-  { size: 3.6, color: "F", clarity: "VVS1" },
-  { size: 4.2, color: "F", clarity: "VVS1" },
-  { size: 3.7, color: "F", clarity: "VVS1" },
-  { size: 4.0, color: "G", clarity: "VVS1" },
-  { size: 4.3, color: "G", clarity: "VVS1" },
-];
+import { Slider } from "@ant-design/react-native";
+import axios from "axios";
+import CurrencySplitter from "../assistants/currencySpliter";
+import { useNavigation } from "@react-navigation/native";
 
 const PriceComponent = () => {
-  const [color, setColor] = useState("F");
-  const [clarity, setClarity] = useState("VS1");
-  const [size, setSize] = useState([3.6, 10.2]);
-  const [filteredDiamonds, setFilteredDiamonds] = useState([]);
-
   const colorLabels = ["F", "G", "H"];
   const clarityLabels = ["VS1", "VS", "I2", "SI1", "SI"];
-  const filterDiamonds = () => {
+  const navigate = useNavigation();
+  const [color, setColor] = useState(colorLabels[0]);
+  const [clarity, setClarity] = useState(clarityLabels[0]);
+  const [size, setSize] = useState([0.2, 2.0]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [productData, setProductData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://10.0.2.2:8000/api/products")
+      .then((response) => {
+        setProductData(response.data);
+        console.log("all product:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  const filterProducts = () => {
     console.log("color:", color);
     console.log("clarity:", clarity);
     console.log("size range:", size);
-    const results = diamonds.filter(
-      (diamond) =>
-        diamond.size >= size[0] &&
-        diamond.size <= size[1] &&
-        diamond.color === color &&
-        diamond.clarity === clarity
+    const results = productData.filter(
+      (product) =>
+        product.diamondId.carat >= size[0] &&
+        product.diamondId.carat <= size[1] &&
+        product.diamondId.color === color &&
+        product.diamondId.clarity === clarity
     );
     console.log(results);
-    setFilteredDiamonds(results);
+    setFilteredProducts(results);
   };
 
+  console.log(filteredProducts);
+  const truncateText = (text, wordLimit) => {
+    if (!text) return "";
+    const words = text.split(" ");
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(" ") + "...";
+    }
+    return text;
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>PRICES OF DIAMOND</Text>
 
-      <Text style={styles.label}>Màu sắc:</Text>
+      <Text style={styles.label}>Color:</Text>
+
       <Slider
         style={styles.slider}
         minimumValue={0}
         maximumValue={colorLabels.length - 1}
         step={0.5}
-        value={color}
+        value={colorLabels.indexOf(color)}
         onChange={(value) => {
           setColor(colorLabels[Math.round(value * 2)]);
         }}
@@ -72,13 +82,13 @@ const PriceComponent = () => {
         ))}
       </View>
 
-      <Text style={styles.label}>Độ tinh khiết:</Text>
+      <Text style={styles.label}>Clarity:</Text>
       <Slider
         style={styles.slider}
         minimumValue={0}
         maximumValue={clarityLabels.length - 1}
         step={0.25}
-        value={clarity}
+        value={clarityLabels.indexOf(clarity)}
         onChange={(value) => {
           setClarity(clarityLabels[Math.round(value * 4)]);
         }}
@@ -91,51 +101,53 @@ const PriceComponent = () => {
         ))}
       </View>
 
-      <Text style={styles.label}>Kích thước (mm/ly):</Text>
+      <Text style={styles.label}>Carat:</Text>
       <Slider
         style={styles.slider}
-        minimumValue={7}
-        maximumValue={10}
-        step={1 / 3}
+        minimumValue={0.2}
+        maximumValue={2}
+        step={0.1}
         value={size[1]}
         onChange={(val) => {
-          value = Math.round((3.6 + val * 6.6) * 10) / 10;
-          setSize([size[0], value]);
+          setSize([size[0], val.toFixed(2) * 10 * 0.18 + size[0]]);
         }}
       />
       <View style={styles.sizeLabels}>
-        <Text style={{ color: "#fff" }}>{size[0].toFixed(1)}</Text>
-        <Text style={{ color: "#fff" }}>{size[1].toFixed(1)}</Text>
+        <Text style={{ color: "#fff" }}>{size[0].toFixed(2)}</Text>
+        <Text style={{ color: "#fff" }}>{size[1].toFixed(2)}</Text>
       </View>
       <View style={{ alignItems: "center" }}>
-        <TouchableOpacity onPress={filterDiamonds} style={styles.resultBtn}>
-          <Text style={{ color: "#fff", fontWeight: 700 }}>SHOW RESULTS</Text>
+        <TouchableOpacity onPress={filterProducts} style={styles.resultBtn}>
+          <Text style={{ color: "#fff", fontWeight: "700" }}>SHOW RESULTS</Text>
         </TouchableOpacity>
       </View>
-      {/* <Button title="Show Results" onPress={filterDiamonds} /> */}
 
-      {filteredDiamonds.length > 0 && (
-        <View style={styles.resultsContainer}>
-          <Text style={styles.resultsTitle}>Results:</Text>
-          <FlatList
-            data={filteredDiamonds}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.resultRow}>
-                <Image
-                  source={{
-                    uri: "https://i.natgeofe.com/k/905d83a3-45ed-46d1-8717-833d30b8c964/diamond-polished_4x3.jpg",
-                  }}
-                  style={styles.icon}
-                />
-                <Text style={styles.resultText}>{item.size}</Text>
-                <Text style={styles.resultText}>{item.color}</Text>
-                <Text style={styles.resultText}>{item.clarity}</Text>
-                <Checkbox />
-              </View>
-            )}
-          />
-        </View>
+      <Text style={styles.resultsTitle}>Results:</Text>
+      {filteredProducts.length > 0 && (
+        <ScrollView style={styles.resultsContainer}>
+          {filteredProducts.map((product, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.resultRow}
+              onPress={() => navigate.navigate("ProductDetail", { product })}
+              // onPress={() => console.log(item.image)}
+            >
+              <Image
+                source={{
+                  uri: product.image[0],
+                }}
+                style={styles.icon}
+              />
+              <Text style={styles.resultText}>
+                {truncateText(product.productName, 4)}
+              </Text>
+              <Text style={styles.resultText}>
+                ${CurrencySplitter(product.price)}
+              </Text>
+              <Text style={styles.resultText}>{product.diamondId.type}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       )}
     </View>
   );
@@ -181,13 +193,15 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   resultsContainer: {
-    marginTop: 20,
+    marginTop: 12,
     color: "#fff",
+    maxHeight: 350,
   },
   resultsTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#fff",
+    marginTop: 12,
   },
   resultRow: {
     flexDirection: "row",
@@ -196,14 +210,17 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 5,
     borderRadius: 5,
+    justifyContent: "space-between",
   },
   resultText: {
-    flex: 1,
     fontSize: 14,
+    flex: 1,
+    alignItems: "center",
+    textAlign: "center",
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: 50,
+    height: 50,
     marginRight: 10,
     borderRadius: 10,
   },
