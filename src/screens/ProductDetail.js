@@ -32,7 +32,7 @@ const ProductDetail = ({ route }) => {
   useEffect(() => {
     fetchCartItems();
     getSizeInstruction();
-  }, []);
+  }, [currentSize]);
 
   const getSizeInstruction = () => {
     switch (product.shellId.category) {
@@ -60,33 +60,49 @@ const ProductDetail = ({ route }) => {
   };
 
   const fetchCartItems = async () => {
-    try {
-      const email = await AsyncStorage.getItem("userEmail");
-      const token = await AsyncStorage.getItem("userToken");
-
-      if (!email || !token) {
-        Alert.alert("Please log in to view your cart.");
-        return;
-      }
-
-      const userIdResponse = await axios.get(
-        `http://10.0.2.2:8000/api/users/getUser/${email}`
-      );
-      const userId = userIdResponse.data.user._id;
-
-      const cartResponse = await axios.get(
-        `http://10.0.2.2:8000/api/carts/user/${userId}`
-      );
-      const cartItems = cartResponse.data;
-
-      const isProductInCart = cartItems.some(
-        (item) => item.productId === product._id
-      );
-      setIsInCart(isProductInCart);
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
-      Alert.alert("Error", "Failed to fetch cart items. Please try again.");
-    }
+    await AsyncStorage.getItem("user")
+      .then(async (value) => {
+        const userData = JSON.parse(value);
+        await axios
+          .get(`http://10.0.2.2:8000/api/carts/user/${userData._id}`)
+          .then((res) => {
+            console.log("cart", res.data);
+            const isProductInCart = res.data.some(
+              (item) =>
+                item.productId._id === product._id && item.size === currentSize
+            );
+            console.log("is: ", isProductInCart);
+            setIsInCart(isProductInCart);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        Alert.alert(
+          "Authentication is required",
+          "Please sign in to start shopping!",
+          [
+            {
+              text: "Cancel",
+              isPreferred: false,
+              style: "destructive",
+              onPress: () => {
+                navigate.reset();
+              },
+            },
+            {
+              text: "Sign in",
+              isPreferred: true,
+              style: "default",
+              onPress: () => {
+                navigate.navigate("Login");
+              },
+            },
+          ]
+        );
+      });
   };
 
   const handleAddToCart = async () => {
@@ -121,7 +137,6 @@ const ProductDetail = ({ route }) => {
 
       if (response.status === 200) {
         setIsInCart(true);
-        Alert.alert("Item added to cart successfully!");
       } else {
         Alert.alert("Failed to add item to cart. Please try again later.");
       }
