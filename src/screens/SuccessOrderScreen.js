@@ -48,10 +48,10 @@ export default function SuccessOrderScreen({ route }) {
             Order #{transactionId} has been placed.
           </Text>
           <TouchableOpacity
-            onPress={() => navigate.navigate("Home")}
+            onPress={() => navigate.navigate("Orders")}
             style={tw`bg-white px-8 py-2 rounded-xl my-4`}
           >
-            <Text style={tw`font-semibold`}>Back home</Text>
+            <Text style={tw`font-semibold`}>Check order</Text>
           </TouchableOpacity>
           <Text style={tw`text-white text-xs italic`}>
             returning home in {countdown}...
