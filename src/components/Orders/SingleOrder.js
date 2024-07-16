@@ -71,6 +71,7 @@ export default function SingleOrder({ order }) {
               <Image
                 key={index}
                 source={{ uri: item.product.image[0] }}
+                key={index}
                 style={{ width: 40, height: 40, borderRadius: 50 }}
               />
             );
