@@ -16,6 +16,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import tw from "twrnc";
 import { Icon } from "react-native-elements";
+import CurrencySplitter from "../assistants/currencySpliter";
 
 const CartScreen = () => {
   const navigation = useNavigation();
@@ -31,31 +32,44 @@ const CartScreen = () => {
   }, [navigation]);
 
   const fetchCartItems = async () => {
-    try {
-      const email = await AsyncStorage.getItem("userEmail");
-      const token = await AsyncStorage.getItem("userToken");
-
-      if (!email || !token) {
-        Alert.alert("Please log in to view your cart.");
-        return;
-      }
-
-      const userIdResponse = await axios.get(
-        `http://10.0.2.2:8000/api/users/getUser/${email}`
-      );
-      const userId = userIdResponse.data.user._id;
-      console.log("user:", userId);
-
-      const cartResponse = await axios.get(
-        `http://10.0.2.2:8000/api/carts/user/${userId}`
-      );
-      const cartItems = cartResponse.data;
-      console.log("cart", cartItems);
-      setCartItems(cartItems);
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
-      Alert.alert("Error", "Failed to fetch cart items. Please try again.");
-    }
+    await AsyncStorage.getItem("user")
+      .then(async (value) => {
+        const userData = JSON.parse(value);
+        await axios
+          .get(`http://10.0.2.2:8000/api/carts/user/${userData._id}`)
+          .then((res) => {
+            console.log("cart", res.data);
+            setCartItems(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        Alert.alert(
+          "Authentication is required",
+          "Please sign in to start shopping!",
+          [
+            {
+              text: "Cancel",
+              isPreferred: false,
+              style: "destructive",
+              onPress: () => {
+                navigation.navigate("Cart");
+              },
+            },
+            {
+              text: "Sign in",
+              isPreferred: true,
+              style: "default",
+              onPress: () => {
+                navigation.navigate("Login");
+              },
+            },
+          ]
+        );
+      });
   };
 
   useEffect(() => {
@@ -106,7 +120,12 @@ const CartScreen = () => {
       <Text style={styles.header}>Cart</Text>
 
       {cartItems.length === 0 ? (
-        <Text style={styles.emptyCartText}>No products added to cart.</Text>
+        <View style={tw`items-center gap-4 mt-24`}>
+          <Icon type="font-awesome-5" name="box-open" color="#fff" size={96} />
+          <Text style={tw`text-gray-500 text-sm italic`}>
+            There is no product yet!
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={cartItems}
@@ -123,10 +142,7 @@ const CartScreen = () => {
                 </Text>
                 <Text style={styles.itemSize}>Size: {item.size}</Text>
                 <Text style={styles.itemPrice}>
-                  Price: {item.productId.price}$
-                </Text>
-                <Text style={styles.itemDescription}>
-                  {truncateText(item.productId.description, 10)}
+                  $ {CurrencySplitter(item.productId.price)}
                 </Text>
                 <View style={styles.quantityContainer}>
                   <Stepper
@@ -148,14 +164,21 @@ const CartScreen = () => {
 
       {cartItems.length > 0 && (
         <View style={styles.footer}>
-          <Text style={styles.totalText}>Total: {totalPrice}$</Text>
+          <View>
+            <Text style={tw`text-yellow-100 text-xs`}>Total</Text>
+            <Text style={styles.totalText}>
+              $ {CurrencySplitter(totalPrice)}
+            </Text>
+          </View>
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("Checkout", { products: cartItems })
             }
             style={styles.buyBtn}
           >
-            <Text style={tw`text-white font-bold text-lg`}>BUY IT</Text>
+            <Text style={tw`text-white font-bold`} numberOfLines={1}>
+              PROCEED TO CHECKOUT
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -263,11 +286,11 @@ const styles = StyleSheet.create({
   footer: {
     borderTopWidth: 1,
     borderColor: "#555",
-    paddingVertical: 10,
+    paddingTop: 8,
     alignItems: "center",
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    gap: 40,
   },
   totalText: {
     color: "#FFDE4D",
@@ -276,9 +299,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buyBtn: {
-    backgroundColor: "#212121",
+    flex: 1,
+    backgroundColor: "teal",
     paddingVertical: 12,
-    paddingHorizontal: 20,
     borderRadius: 12,
     width: "40%",
     alignItems: "center",
@@ -328,12 +351,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
-    marginTop: 20,
-  },
-  emptyCartText: {
-    color: "#fff",
-    fontSize: 18,
-    textAlign: "center",
     marginTop: 20,
   },
 });

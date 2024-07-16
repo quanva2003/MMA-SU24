@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import tw from "twrnc";
 import dateFormat from "../../assistants/date.format";
 import { Icon } from "react-native-elements";
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import CurrencySplitter from "../../assistants/currencySpliter";
 
 export default function SingleOrder({ order }) {
   const [itemList, setItemList] = useState([]);
+  const [statusColor, setStatusColor] = useState("gray-500");
+
+  const navigate = useNavigation();
+
   const fetchOrderItem = async () => {
     await axios
       .get(`http://10.0.2.2:8000/api/orderItems/order/${order._id}`)
@@ -20,10 +25,32 @@ export default function SingleOrder({ order }) {
 
   useEffect(() => {
     fetchOrderItem();
-  }, []);
+    switch (order.status) {
+      case "IN DELIVERY": {
+        setStatusColor("sky-700");
+        break;
+      }
+      case "COMPLETED": {
+        setStatusColor("green-700");
+        break;
+      }
+      case "CANCELED": {
+        setStatusColor("red-700");
+        break;
+      }
+    }
+  }, [order]);
 
   return (
-    <View style={tw`w-full flex-1 border border-white rounded-xl px-4 py-2`}>
+    <TouchableOpacity
+      onPress={() =>
+        navigate.navigate("OrderDetail", {
+          order: order,
+          items: itemList,
+        })
+      }
+      style={tw`w-full flex-1 border border-white rounded-xl px-4 py-2`}
+    >
       <View style={tw`w-full flex-row items-center justify-between`}>
         <View style={tw`flex items-start gap-1`}>
           <Text style={tw`text-white text-xl font-bold`}>
@@ -56,7 +83,7 @@ export default function SingleOrder({ order }) {
       </View>
 
       <View style={tw`w-full flex-row items-center gap-2`}>
-        <View style={tw`grow flex items-start`}>
+        <View style={tw`grow items-start`}>
           <Text style={tw`text-stone-600 text-[0.7rem]`}>Products</Text>
           <Text style={tw`text-white`}>
             {itemList.length} product
@@ -64,18 +91,17 @@ export default function SingleOrder({ order }) {
           </Text>
         </View>
 
-        <View style={tw`grow flex items-start`}>
+        <View style={tw`grow items-start`}>
           <Text style={tw`text-stone-600 text-[0.7rem]`}>Total</Text>
           <Text style={tw`text-white`}>
             $ <Text>{CurrencySplitter(parseFloat(order.total))}</Text>
           </Text>
         </View>
 
-        <View style={tw`grow flex items-start`}>
-          <Text style={tw`text-stone-600 text-[0.7rem]`}>Status</Text>
-          <Text style={tw`text-white`}>{order.status}</Text>
+        <View style={tw`grow items-end`}>
+          <Text style={tw`w-24 text-center font-bold py-1 rounded-lg text-white bg-${statusColor}`}>{order.status}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
