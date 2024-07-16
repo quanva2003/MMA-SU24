@@ -27,13 +27,13 @@ const diamonds = [
 ];
 
 const PriceComponent = () => {
-  const [color, setColor] = useState("");
-  const [clarity, setClarity] = useState("");
+  const [color, setColor] = useState("F");
+  const [clarity, setClarity] = useState("VS1");
   const [size, setSize] = useState([3.6, 10.2]);
   const [filteredDiamonds, setFilteredDiamonds] = useState([]);
 
   const colorLabels = ["F", "G", "H"];
-  const clarityLabels = ["IF/FL", "VVS2", "VS1", "VVS1", "VS2", "SI1", "SI2"];
+  const clarityLabels = ["VS1", "VS", "I2", "SI1", "SI"];
   const filterDiamonds = () => {
     console.log("color:", color);
     console.log("clarity:", clarity);
@@ -61,7 +61,7 @@ const PriceComponent = () => {
         step={0.5}
         value={color}
         onChange={(value) => {
-          setColor(colorLabels[Math.round(value * 3)]);
+          setColor(colorLabels[Math.round(value * 2)]);
         }}
       />
       <View style={styles.sliderLabels}>
@@ -77,10 +77,10 @@ const PriceComponent = () => {
         style={styles.slider}
         minimumValue={0}
         maximumValue={clarityLabels.length - 1}
-        step={1 / 6}
+        step={0.25}
         value={clarity}
         onChange={(value) => {
-          setClarity(clarityLabels[Math.round(value * 6)]);
+          setClarity(clarityLabels[Math.round(value * 4)]);
         }}
       />
       <View style={styles.sliderLabels}>
