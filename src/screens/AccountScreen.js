@@ -75,7 +75,6 @@ const AccountScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.reportsContainer}>
-        <Text style={styles.reportsTitle}>My Reports:</Text>
         <View style={styles.reportsGrid}>
           <TouchableOpacity style={styles.reportCard}>
             <View style={styles.cardHeader}>
@@ -210,7 +209,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 10,
     marginTop: 20,
-    backgroundColor: "#212121",
+    backgroundColor: "red",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",

@@ -13,6 +13,7 @@ import { Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import tw from "twrnc";
+import CurrencySplitter from "../../assistants/currencySpliter";
 
 const truncateText = (text, wordLimit) => {
   if (!text) return "";
@@ -32,7 +33,9 @@ const ProductCard = ({ product, navigate }) => (
     <Text style={styles.productDescription}>
       {truncateText(product.productName, 4)}
     </Text>
-    <Text style={styles.productPrice}>Price: {product.price}$</Text>
+    <Text style={styles.productPrice}>
+      $ {CurrencySplitter(product.price)}
+    </Text>
   </TouchableOpacity>
 );
 
