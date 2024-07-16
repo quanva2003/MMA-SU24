@@ -10,10 +10,13 @@ import {
 } from "react-native";
 import { jwtDecode } from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
-const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
+const LoginScreen = ({ route }) => {
+  const [email, setEmail] = useState(route.params ? route.params.email : "");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigation();
 
   const handleLogin = async () => {
     try {
@@ -27,7 +30,7 @@ const LoginScreen = ({ navigation }) => {
       await AsyncStorage.setItem("user", JSON.stringify(decoded));
       await AsyncStorage.setItem("userToken", res.data.token);
       await AsyncStorage.setItem("userEmail", email);
-      navigation.navigate("Main");
+      navigate.navigate("Main");
     } catch (err) {
       console.error("Error", err);
       Alert.alert(
@@ -37,12 +40,8 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  // const handleLogin = () => {
-  //   navigation.navigate("Main");
-  // }
-
   const handleSignUp = () => {
-    navigation.navigate("SignUp");
+    navigate.navigate("SignUp");
   };
 
   return (

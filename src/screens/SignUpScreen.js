@@ -8,12 +8,14 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
-const SignUpScreen = ({ navigation }) => {
+const SignUpScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigation();
 
   const handleSignUp = () => {
     if (password !== confirmPassword) {
@@ -29,8 +31,7 @@ const SignUpScreen = ({ navigation }) => {
       })
       .then((res) => {
         console.log("Success", res.data);
-        // Navigate to main screen if signup is successful
-        navigation.navigate("Login");
+        navigate.navigate("Login", { email: email });
       })
       .catch((err) => {
         console.error("Error", err);
@@ -80,7 +81,7 @@ const SignUpScreen = ({ navigation }) => {
       </TouchableOpacity>
       <View style={styles.loginContainer}>
         <Text style={styles.alreadyAccountText}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+        <TouchableOpacity onPress={() => navigate.navigate("Login")}>
           <Text style={styles.loginLinkText}>Login</Text>
         </TouchableOpacity>
       </View>

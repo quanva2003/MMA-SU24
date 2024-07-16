@@ -64,7 +64,7 @@ export default function OrderDetail({ route }) {
             #{order.transactionId}
           </Text>
           <Text
-            style={tw`px-8 py-2 bg-${statusColor} font-black rounded-full text-xl text-white`}
+            style={tw`px-6 py-1 bg-${statusColor} font-black rounded-full text-xl text-white`}
           >
             {order.status}
           </Text>
@@ -161,21 +161,22 @@ export default function OrderDetail({ route }) {
           </ScrollView>
         </View>
 
-        <View style={tw`px-4 pt-4`}>
+        <View style={tw`px-4 pt-4 mt-auto`}>
           <Text style={tw`text-gray-500 text-xs font-bold pb-4`}>TOTAL</Text>
           <View style={tw`w-full flex-row justify-between items-center`}>
             <Text style={tw`text-gray-500 text-xs pb-2`}>Subtotal</Text>
             <Text style={tw`text-gray-500 text-xs pb-2`}>
-              $ {CurrencySplitter(order.total)}
+              ${" "}
+              {CurrencySplitter(
+                order.discount ? order.total - order.discount : order.total
+              )}
             </Text>
           </View>
           <View style={tw`w-full flex-row justify-between items-center`}>
-            <Text style={tw`text-gray-500 text-xs pb-2`}>Delivery cost</Text>
-            <Text style={tw`text-gray-500 text-xs pb-2`}>$ 0</Text>
-          </View>
-          <View style={tw`w-full flex-row justify-between items-center`}>
             <Text style={tw`text-gray-500 text-xs pb-2`}>Discount</Text>
-            <Text style={tw`text-gray-500 text-xs pb-2`}>$ 0</Text>
+            <Text style={tw`text-gray-500 text-xs pb-2`}>
+              - $ {CurrencySplitter(order.discount ? order.discount : 0)}
+            </Text>
           </View>
           <View style={tw`border-t border-gray-300 pb-4`}></View>
           <View style={tw`w-full flex-row justify-between items-center`}>

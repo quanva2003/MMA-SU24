@@ -15,7 +15,6 @@ import SingleOrder from "../components/Orders/SingleOrder";
 
 export default function OrdersScreen() {
   const [tab, setTab] = useState("upcoming");
-  const [user, setUser] = useState(null);
   const [orderList, setOrderList] = useState([]);
   const [currentList, setCurrentList] = useState([]);
   const navigate = useNavigation();
@@ -23,7 +22,6 @@ export default function OrdersScreen() {
   const fetchOrders = async () => {
     await AsyncStorage.getItem("user").then(async (value) => {
       const currentUser = JSON.parse(value);
-      setUser(currentUser);
 
       await axios
         .get(`http://10.0.2.2:8000/api/orders/user/${currentUser._id}`)

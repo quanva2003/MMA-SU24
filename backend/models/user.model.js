@@ -25,6 +25,17 @@ const userSchema = new mongoose.Schema(
       required: false,
       default: "",
     },
+    role: {
+      type: String,
+      enum: ["user", "admin", "staff"],
+      required: true,
+      default: "user",
+    },
+    point: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     cart: [
       {
         type: mongoose.Schema.Types.ObjectId,

@@ -69,6 +69,7 @@ export default function SingleOrder({ order }) {
           if (index < 5)
             return (
               <Image
+                key={index}
                 source={{ uri: item.product.image[0] }}
                 key={index}
                 style={{ width: 40, height: 40, borderRadius: 50 }}
@@ -99,7 +100,11 @@ export default function SingleOrder({ order }) {
         </View>
 
         <View style={tw`grow items-end`}>
-          <Text style={tw`w-24 text-center font-bold py-1 rounded-lg text-white bg-${statusColor}`}>{order.status}</Text>
+          <Text
+            style={tw`w-24 text-center font-bold py-1 rounded-lg text-white bg-${statusColor}`}
+          >
+            {order.status}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

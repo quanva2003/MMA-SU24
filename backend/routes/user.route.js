@@ -10,4 +10,6 @@ router.get("/getUser/:email", UserController.findUserByEmail);
 
 router.patch("/:email", UserController.updateUserByEmail);
 
+router.patch("/", UserController.updateAllUser);
+
 module.exports = router;
