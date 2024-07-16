@@ -9,44 +9,50 @@ import {
 } from "react-native";
 import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import tw from "twrnc";
 
-const AccountScreen = ({ navigation }) => {
+const AccountScreen = () => {
   const [profileData, setProfileData] = useState({
-    email: "",
     name: "",
-    token: "",
+    point: 0,
   });
   const navigate = useNavigation();
 
+  const fetchData = async () => {
+    await AsyncStorage.getItem("user")
+      .then(async (value) => {
+        const userData = JSON.parse(value);
+        await axios
+          .get(`http://10.0.2.2:8000/api/users/getUser/${userData.email}`)
+          .then((res) => {
+            setProfileData({
+              name: res.data.user.name,
+              point: res.data.user.point,
+            });
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        Alert.alert("Authentication is required", "Please sign in!");
+      });
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const email = await AsyncStorage.getItem("userEmail");
-        const token = await AsyncStorage.getItem("userToken");
-        if (email && token) {
-          setProfileData((prevState) => ({ ...prevState, email, token }));
-          const response = await axios.get(
-            `http://10.0.2.2:8000/api/users/getUser/${email}`
-          );
-          const name = response.data.user.name;
-          console.log("jo:", response.data.user.name);
-          setProfileData((prevState) => ({ ...prevState, name }));
-        }
-      } catch (error) {
-        console.error("Error fetching data from AsyncStorage or API", error);
-      }
-    };
-    fetchData();
-  }, []);
+    const unsubscribe = navigate.addListener("focus", () => {
+      fetchData();
+    });
+    return unsubscribe;
+  }, [navigate]);
 
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("userToken");
       await AsyncStorage.removeItem("userEmail");
+      await AsyncStorage.removeItem("user");
       console.log("Logout successful");
-      navigation.navigate("Login");
+      navigate.navigate("Login");
     } catch (error) {
       console.error("Error during logout", error);
       Alert.alert(
@@ -61,58 +67,48 @@ const AccountScreen = ({ navigation }) => {
       <View style={styles.profileHeader}>
         <Image
           source={{
-            uri: "https://i.pinimg.com/736x/30/9f/ec/309fecf07c6707f3041164171a3510b3.jpg",
-          }} // Replace with actual image URL
+            uri: "https://i.pinimg.com/564x/f3/d1/ed/f3d1edf10d63c40e1fa06364176fa502.jpg",
+          }}
           style={styles.profileImage}
         />
         <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>{profileData.name}</Text>
-          <Text style={styles.profileRole}>Golden Break</Text>
-          <TouchableOpacity>
-            <Text style={styles.changeProfileText}>Change profile</Text>
-          </TouchableOpacity>
+          <Text style={styles.profileName}>
+            {profileData ? profileData.name : "error"}
+          </Text>
         </View>
       </View>
 
       <View style={styles.reportsContainer}>
         <View style={styles.reportsGrid}>
-          <TouchableOpacity style={styles.reportCard}>
+          <View style={styles.reportCard}>
             <View style={styles.cardHeader}>
               <Icon type="entypo" name="ticket" color="#ffffff" />
-              <Text style={styles.reportTitle}>Voucher</Text>
+              <Text style={styles.reportTitle}>
+                Point: {profileData ? profileData.point : 0}
+              </Text>
             </View>
             <Text style={styles.reportDescription}>
-              Some short description of this type of report.
+              This point is automatically applied when purchasing to get
+              discounted prices.
             </Text>
-          </TouchableOpacity>
+            <Text style={styles.reportDescription}>
+              Every order gives 1% of the subtotal as point.
+            </Text>
+            <Text style={styles.reportDescription}>
+              1 point is equivalent to 1 US Dollar.
+            </Text>
+          </View>
+
           <TouchableOpacity
             onPress={() => navigate.navigate("Orders")}
-            style={[styles.reportCard, styles.highlightedCard]}
+            style={[styles.reportCard, tw`bg-stone-700`]}
           >
             <View style={styles.cardHeader}>
-              <Icon type="entypo" name="shopping-cart" color="#ffffff" />
+              <Icon type="font-awesome-5" name="box" color="#ffffff" />
               <Text style={styles.reportTitle}>Orders</Text>
             </View>
             <Text style={styles.reportDescription}>
-              Some short description of this type of report.
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reportCard}>
-            <View style={styles.cardHeader}>
-              <Icon type="entypo" name="ticket" color="#ffffff" />
-              <Text style={styles.reportTitle}>Points</Text>
-            </View>
-            <Text style={styles.reportDescription}>
-              Some short description of this type of report.
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reportCard}>
-            <View style={styles.cardHeader}>
-              <Icon type="entypo" name="heart" color="#ffffff" />
-              <Text style={styles.reportTitle}>Yêu thích</Text>
-            </View>
-            <Text style={styles.reportDescription}>
-              Some short description of this type of report.
+              View ongoing and past orders.
             </Text>
           </TouchableOpacity>
         </View>
@@ -142,6 +138,8 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    borderWidth: 1,
+    borderColor: "white",
   },
   profileInfo: {
     marginLeft: 20,
@@ -166,7 +164,7 @@ const styles = StyleSheet.create({
   cardHeader: {
     display: "flex",
     flexDirection: "row",
-    gap: 10,
+    gap: 12,
   },
   reportsTitle: {
     fontSize: 24,
@@ -180,18 +178,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   reportCard: {
-    backgroundColor: "#333",
+    width: "100%",
+    backgroundColor: "#222",
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
-    width: "48%",
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 2,
-  },
-  highlightedCard: {
-    backgroundColor: "#444",
+    gap: 8,
   },
   reportTitle: {
     fontSize: 18,
@@ -200,7 +196,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   reportDescription: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#bbb",
   },
   logoutButton: {
@@ -208,7 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     gap: 10,
-    marginTop: 20,
+    marginTop: "auto",
     backgroundColor: "red",
     padding: 15,
     borderRadius: 10,

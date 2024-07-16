@@ -59,7 +59,7 @@ const MainTabs = () => {
             <Icon
               type="MaterialIcons"
               name="newspaper"
-              color={color}
+              color={focused ? "#fff" : "#666"}
               size={focused ? 30 : 24} // Increase size if focused
             />
           ),
@@ -74,7 +74,7 @@ const MainTabs = () => {
             <Icon
               type="MaterialIcons"
               name="price-change"
-              color={color}
+              color={focused ? "#fff" : "#666"}
               size={focused ? 30 : 24} // Increase size if focused
             />
           ),
@@ -88,7 +88,7 @@ const MainTabs = () => {
             <Icon
               type="MaterialIcons"
               name="home"
-              color={color}
+              color={focused ? "#fff" : "#666"}
               size={focused ? 30 : 24} // Increase size if focused
             />
           ),
@@ -102,21 +102,7 @@ const MainTabs = () => {
             <Icon
               type="MaterialIcons"
               name="shopping-cart"
-              color={color}
-              size={focused ? 30 : 24} // Increase size if focused
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Sale"
-        component={SaleScreen}
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Icon
-              type="MaterialIcons"
-              name="point-of-sale"
-              color={color}
+              color={focused ? "#fff" : "#666"}
               size={focused ? 30 : 24} // Increase size if focused
             />
           ),
@@ -130,21 +116,7 @@ const MainTabs = () => {
             <Icon
               type="antdesign"
               name="user"
-              color={color}
-              size={focused ? 30 : 24} // Increase size if focused
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Order"
-        component={ManageOrdersScreen}
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Icon
-              type="antdesign"
-              name="book"
-              color={color}
+              color={focused ? "#fff" : "#666"}
               size={focused ? 30 : 24} // Increase size if focused
             />
           ),

@@ -43,6 +43,7 @@ export default function CheckoutScreen({ route }) {
   const [isUpdatingAddress, setIsUpdatingAddress] = useState(false);
 
   const [total, setTotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -67,28 +68,39 @@ export default function CheckoutScreen({ route }) {
   };
 
   const getUserData = async () => {
-    await AsyncStorage.getItem("user").then((value) => {
-      const userData = JSON.parse(value);
-      setCurrentUser(userData);
-      setPersonalInfo({
-        ...personalInfo,
-        email: userData.email,
-        phoneNumber: userData.phoneNumber ? userData.phoneNumber : "",
-      });
+    await AsyncStorage.getItem("user").then(async (value) => {
+      const parsedUser = JSON.parse(value);
+      await axios
+        .get(`http://10.0.2.2:8000/api/users/getUser/${parsedUser.email}`)
+        .then((res) => {
+          const userData = res.data.user;
+          console.log("USER: ", userData);
+          setCurrentUser(userData);
+          setPersonalInfo({
+            ...personalInfo,
+            email: userData.email,
+            phoneNumber: userData.phoneNumber ? userData.phoneNumber : "",
+          });
 
-      if (userData.address && userData.address.length > 0) {
-        const addressArray = userData.address.split(", ");
-        setPersonalInfo({
-          email: userData.email,
-          phoneNumber: userData.phoneNumber ? userData.phoneNumber : "",
-          address: {
-            province: addressArray[3],
-            district: addressArray[2],
-            ward: addressArray[1],
-            details: addressArray[0],
-          },
-        });
-      }
+          if (userData.address && userData.address.length > 0) {
+            const addressArray = userData.address.split(", ");
+            setPersonalInfo({
+              email: userData.email,
+              phoneNumber: userData.phoneNumber ? userData.phoneNumber : "",
+              address: {
+                province: addressArray[3],
+                district: addressArray[2],
+                ward: addressArray[1],
+                details: addressArray[0],
+              },
+            });
+          }
+
+          if (userData.point > 0) {
+            setDiscount(userData.point);
+          }
+        })
+        .catch((err) => console.log(err));
     });
   };
 
@@ -103,10 +115,14 @@ export default function CheckoutScreen({ route }) {
   };
 
   useEffect(() => {
-    getUserData();
-    fetchProvinces();
-    getTotal();
-  }, []);
+    const unsubscribe = navigate.addListener("focus", () => {
+      getUserData();
+      fetchProvinces();
+      getTotal();
+    });
+
+    return unsubscribe;
+  }, [navigate]);
 
   const handleSelectProvince = async (value) => {
     if (!value) {
@@ -212,7 +228,7 @@ export default function CheckoutScreen({ route }) {
     setIsLoading(true);
     await axios
       .post("http://10.0.2.2:8000/api/stripe/intents", {
-        amount: total * 100,
+        amount: (total - discount) * 100,
       })
       .then(async (res) => {
         console.log("Intent created: ", res.data.paymentIntent);
@@ -233,7 +249,7 @@ export default function CheckoutScreen({ route }) {
   };
 
   const showPayOrder = async () => {
-    console.log("PERSONAL INFO: ", personalInfo);
+    getUserData();
 
     if (
       !personalInfo.email.match(
@@ -275,8 +291,10 @@ export default function CheckoutScreen({ route }) {
       } else {
         setIsLoading(true);
         //Save personal information if empty or update latest information
+        //and Update point
         await axios
           .patch(`http://10.0.2.2:8000/api/users/${currentUser.email}`, {
+            point: Math.floor(total / 100),
             phoneNumber: personalInfo.phoneNumber,
             address: isShipping
               ? personalInfo.address.details +
@@ -301,6 +319,7 @@ export default function CheckoutScreen({ route }) {
             user: currentUser._id,
             transactionId: newOrderCode,
             total: parseFloat(total),
+            discount: discount > 0 ? parseFloat(discount) : 0,
             deliveryRequired: isShipping,
             deliveryInfo: {
               email: personalInfo.email,
@@ -333,6 +352,14 @@ export default function CheckoutScreen({ route }) {
                   console.log("Created OrderItem: ", res.data);
                 })
                 .catch((err) => console.log(err));
+
+              //Delete cartItems
+              await axios
+                .delete(`http://10.0.2.2:8000/api/carts/delete/${item._id}`)
+                .then((res) => {
+                  console.log("Delete cartItems: ", res.data);
+                })
+                .catch((err) => console.log(err));
             });
             setIsLoading(false);
             navigate.navigate("SuccessOrder", { transactionId: transactionId });
@@ -363,15 +390,15 @@ export default function CheckoutScreen({ route }) {
         </SafeAreaView>
 
         <ScrollView style={tw`flex-1 mt-7.5 bg-stone-950`}>
-          <View style={tw`w-full flex items-center pt-12`}>
-            <Text style={tw`text-white text-[1.5rem] font-bold pb-2`}>
+          <View style={tw`w-full flex items-start px-4 pt-12`}>
+            <Text style={tw`text-white text-[1.8rem] font-bold pb-2`}>
               CHECKOUT
             </Text>
           </View>
 
           <View style={tw`w-full flex items-start gap-2 py-2`}>
-            <Text style={tw`text-gray-400 font-semibold px-4 py-2`}>
-              Personal information
+            <Text style={tw`text-gray-400 font-semibold text-xs px-4`}>
+              PERSONAL INFORMATION
             </Text>
             <View style={tw`w-full flex gap-2 px-16 py-2`}>
               <TextInput
@@ -431,7 +458,10 @@ export default function CheckoutScreen({ route }) {
 
               <View
                 style={tw`flex-1 ${
-                  (!isShipping || isUpdatingAddress) && "hidden"
+                  (!isShipping ||
+                    (isUpdatingAddress &&
+                      personalInfo.address.details.length === 0)) &&
+                  "hidden"
                 }`}
               >
                 <Text style={tw`text-gray-600 text-xs`}>Address</Text>
@@ -445,7 +475,7 @@ export default function CheckoutScreen({ route }) {
                   style={tw`w-32 flex items-center p-2 bg-sky-800 rounded-xl mt-2`}
                 >
                   <Text style={tw`text-white font-semibold`}>
-                    + Update address
+                    Update address
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -524,12 +554,14 @@ export default function CheckoutScreen({ route }) {
           </View>
 
           <View style={tw`w-full flex items-start gap-2 py-4`}>
-            <Text style={tw`text-gray-400 font-semibold px-4`}>Items</Text>
+            <Text style={tw`text-gray-400 font-semibold px-4 text-xs`}>
+              ITEMS
+            </Text>
             <ScrollView style={tw`w-full py-2 max-h-64`}>
               <View style={tw`w-full flex border-t border-white gap-2`}>
                 {productList.map((item) => {
                   return (
-                    <TouchableOpacity
+                    <View
                       key={item._id}
                       style={tw`w-full flex-row gap-2 py-2 border-b border-gray-500`}
                     >
@@ -557,10 +589,13 @@ export default function CheckoutScreen({ route }) {
                           Quantity: {item.quantity}
                         </Text>
                         <Text style={tw`text-red-300`}>
-                          $ {CurrencySplitter(item.productId.price)}
+                          ${" "}
+                          {CurrencySplitter(
+                            item.productId.price * item.quantity
+                          )}
                         </Text>
                       </View>
-                    </TouchableOpacity>
+                    </View>
                   );
                 })}
               </View>
@@ -571,17 +606,26 @@ export default function CheckoutScreen({ route }) {
         <View style={tw`w-full flex-row items-center bg-black`}>
           <View style={tw`flex self-start gap-1 pl-1 pr-4`}>
             <Text style={tw`text-gray-300 text-[0.6rem]`}>Total</Text>
-            <Text style={tw`text-white font-bold text-[1.2rem]`}>
-              $ {CurrencySplitter(total)}
-            </Text>
+            <View style={tw`flex-row items-center gap-2`}>
+              <Text
+                style={tw`text-white font-light text-[1rem] text-gray-500 line-through ${
+                  discount === 0 && "hidden"
+                }`}
+              >
+                $ {CurrencySplitter(total)}
+              </Text>
+              <Text
+                style={tw`text-white font-bold text-[1.2rem] text-yellow-300`}
+              >
+                $ {CurrencySplitter(total - discount)}
+              </Text>
+            </View>
           </View>
           <TouchableOpacity
             onPress={() => showPayOrder()}
             style={tw`grow flex-row items-center justify-center gap-2 rounded-xl bg-sky-700 p-2 mb-4`}
           >
-            <Text style={tw`text-white font-bold text-lg`}>
-              Proceed paying via
-            </Text>
+            <Text style={tw`text-white font-bold text-lg`}>Pay via</Text>
             <Icon type="font-awesome" name="cc-stripe" size={32} color="#fff" />
           </TouchableOpacity>
         </View>

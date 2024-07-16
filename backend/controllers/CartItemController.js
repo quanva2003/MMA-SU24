@@ -37,13 +37,6 @@ module.exports = {
       const cartItems = await CartItem.find({ user: userId }).populate(
         "productId user"
       );
-
-      if (!cartItems.length) {
-        return res
-          .status(404)
-          .json({ message: "No cart items found for this user" });
-      }
-
       res.status(200).json(cartItems);
     } catch (error) {
       console.error("Error getting cart items by user:", error);

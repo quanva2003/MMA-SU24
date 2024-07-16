@@ -44,7 +44,18 @@ module.exports = {
         return res.status(404).json({ message: "Wrong password!" });
       }
 
-      const token = createToken(user);
+      const token = createToken({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        phoneNumber: user.phoneNumber,
+        address: user.address,
+        cart: user.cart,
+        role: user.role,
+        point: user.point,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      });
       res.status(200).json({ token });
     } catch (error) {
       console.log("Error in finding user", error);
@@ -94,6 +105,22 @@ module.exports = {
         updates,
         { new: true }
       );
+
+      return res.status(200).json({
+        message: "Successfully updated user.",
+        result,
+      });
+    } catch (error) {
+      console.log("Error finding user by email", error);
+      res.status(500).json({ message: "Internal Server Error!!!" });
+    }
+  },
+
+  updateAllUser: async (req, res) => {
+    try {
+      const updates = req.body;
+
+      const result = await User.updateMany({}, updates, { new: true });
 
       return res.status(200).json({
         message: "Successfully updated user.",
